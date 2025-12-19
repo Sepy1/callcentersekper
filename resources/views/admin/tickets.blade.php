@@ -128,7 +128,7 @@
                                                style="display:inline-flex;align-items:center;justify-content:center;">
                                                 Detail
                                             </a>
-                                            <button type="button"
+                                                <button type="button"
                                                     class="btn btn-sm bg-gradient-warning rounded-pill px-3 py-2 mb-0 text-white btn-edit-ticket"
                                                     style="display:inline-flex;align-items:center;justify-content:center;"
                                                     data-id="{{ $ticket->id }}"
@@ -137,7 +137,6 @@
                                                     data-email="{{ $ticket->email }}"
                                                     data-kategori="{{ $ticket->kategori }}"
                                                     data-tipe_pelapor="{{ $ticket->tipe_pelapor }}"
-                                                    data-officer="{{ $ticket->officer }}"
                                                     data-status="{{ $ticket->status }}"
                                                     data-judul="{{ $ticket->judul }}"
                                                     data-detail="{{ $ticket->detail }}"
@@ -149,7 +148,7 @@
                                                     data-tempat_lahir="{{ $ticket->tempat_lahir ?? '' }}"
                                                     data-tgl_lahir="{{ $ticket->tgl_lahir ?? '' }}"
                                                     data-kode_kantor="{{ $ticket->kode_kantor ?? '' }}"
-                                            >Edit</button>
+                                                >Edit</button>
                                              <form method="POST" action="{{ route('admin.tickets.destroy', $ticket->id) }}" onsubmit="return confirm('Apakah anda yakin akan menghapus tiket?');" style="margin:0;">
                                                  @csrf
                                                  @method('DELETE')
@@ -218,8 +217,8 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">Officer</label>
-                            <input type="text" name="officer" class="form-control">
+                            <label class="form-label fw-bold">HP</label>
+                            <input type="text" name="hp" id="create-hp" class="form-control">
                         </div>
                         {{-- Nasabah extra fields (hidden unless tipe_pelapor == Nasabah) --}}
                         <div id="nasabah-fields" class="w-100" style="display:none;">
@@ -232,10 +231,7 @@
                                     <label class="form-label small">No. Rekening</label>
                                     <input type="text" name="nomor_rekening" id="nomor_rekening" class="form-control">
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label small">HP</label>
-                                    <input type="text" name="hp" id="hp" class="form-control">
-                                </div>
+                                <!-- HP removed from nasabah block; HP is now in main form -->
                                 <div class="col-md-6">
                                     <label class="form-label small">Nama Ibu</label>
                                     <input type="text" name="nama_ibu" id="nama_ibu" class="form-control">
@@ -333,8 +329,8 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">Officer</label>
-                            <input type="text" name="officer" id="edit-officer" class="form-control">
+                            <label class="form-label fw-bold">HP</label>
+                            <input type="text" name="hp" id="edit-hp" class="form-control">
                         </div>
 
                         <div id="edit-nasabah-fields" class="w-100" style="display:none;">
@@ -347,10 +343,7 @@
                                     <label class="form-label small">No. Rekening</label>
                                     <input type="text" name="nomor_rekening" id="edit-nomor_rekening" class="form-control">
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label small">HP</label>
-                                    <input type="text" name="hp" id="edit-hp" class="form-control">
-                                </div>
+                                <!-- HP removed from nasabah block in edit modal; HP is on main edit form -->
                                 <div class="col-md-6">
                                     <label class="form-label small">Nama Ibu</label>
                                     <input type="text" name="nama_ibu" id="edit-nama_ibu" class="form-control">
@@ -425,7 +418,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // toggle nasabah fields
     const tipe = document.getElementById('tipe-pelapor');
     const nasabahFields = document.getElementById('nasabah-fields');
-    const nasabahRequired = ['id_ktp','nomor_rekening','hp'];
+    const nasabahRequired = ['id_ktp','nomor_rekening'];
     function setNasabahVisible(show) {
         nasabahFields.style.display = show ? 'block' : 'none';
         nasabahRequired.forEach(id => {
@@ -466,7 +459,8 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('edit-email').value = this.dataset.email || '';
             document.getElementById('edit-kategori').value = this.dataset.kategori || '';
             document.getElementById('edit-tipe_pelapor').value = this.dataset.tipe_pelapor || '';
-            document.getElementById('edit-officer').value = this.dataset.officer || '';
+            // HP (main form)
+            document.getElementById('edit-hp').value = this.dataset.hp || '';
             document.getElementById('edit-status').value = this.dataset.status || 'open';
             document.getElementById('edit-judul').value = this.dataset.judul || '';
             document.getElementById('edit-detail').value = this.dataset.detail || '';

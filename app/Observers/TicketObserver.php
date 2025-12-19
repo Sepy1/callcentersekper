@@ -18,22 +18,23 @@ class TicketObserver
         }
 
         try {
-            app(DepWhatsappService::class)->sendTemplateById(
-                phone: $this->normalizePhone($ticket->hp),
-                templateId: '1557389545282102', // TEMPLATE OPEN
-                language: 'id',
-                params: [
-                    $ticket->nama_pelapor,               // {{1}}
-                    $ticket->nomor_tiket,                // {{2}}
-                    $ticket->judul,                      // {{3}}
-                    $ticket->kategori,                   // {{4}}
-                    $ticket->created_at->format('d F Y') // {{5}}
+            // dispatch a queued job to send WA open template
+            \App\Jobs\SendWhatsappTemplate::dispatch(
+                $this->normalizePhone($ticket->hp),
+                '1557389545282102',
+                'id',
+                [
+                    $ticket->nama_pelapor,
+                    $ticket->nomor_tiket,
+                    $ticket->judul,
+                    $ticket->kategori,
+                    $ticket->created_at->format('d F Y'),
                 ]
             );
 
-            Log::info('WA OPEN SENT', ['ticket_id' => $ticket->id]);
+            Log::info('WA OPEN QUEUED', ['ticket_id' => $ticket->id]);
         } catch (\Throwable $e) {
-            Log::error('WA OPEN FAILED', [
+            Log::error('WA OPEN QUEUE FAILED', [
                 'ticket_id' => $ticket->id,
                 'error'     => $e->getMessage(),
             ]);
@@ -50,22 +51,22 @@ class TicketObserver
             $ticket->status === 'closed'
         ) {
             try {
-                app(DepWhatsappService::class)->sendTemplateById(
-                    phone: $this->normalizePhone($ticket->hp),
-                    templateId: '734693812466588', // TEMPLATE CLOSE
-                    language: 'id',
-                    params: [
-                        $ticket->nama_pelapor,                    // {{1}}
-                        $ticket->nomor_tiket,                     // {{2}}
-                        optional($ticket->closing_at)
-                            ->format('d F Y') ?? now()->format('d F Y'), // {{3}}
-                        $ticket->closing_notes ?? '-'             // {{4}} ✅ FIX
+                // queue the WA close notification
+                \App\Jobs\SendWhatsappTemplate::dispatch(
+                    $this->normalizePhone($ticket->hp),
+                    '734693812466588',
+                    'id',
+                    [
+                        $ticket->nama_pelapor,
+                        $ticket->nomor_tiket,
+                        optional($ticket->closing_at)->format('d F Y') ?? now()->format('d F Y'),
+                        $ticket->closing_notes ?? '-',
                     ]
                 );
 
-                Log::info('WA CLOSE SENT', ['ticket_id' => $ticket->id]);
+                Log::info('WA CLOSE QUEUED', ['ticket_id' => $ticket->id]);
             } catch (\Throwable $e) {
-                Log::error('WA CLOSE FAILED', [
+                Log::error('WA CLOSE QUEUE FAILED', [
                     'ticket_id' => $ticket->id,
                     'error'     => $e->getMessage(),
                 ]);

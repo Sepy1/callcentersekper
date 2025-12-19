@@ -239,6 +239,7 @@ class TicketController extends Controller
             'kategori' => 'required|string|max:255',
             'tipe_pelapor' => 'nullable|string|max:255',
             'officer' => 'nullable|string|max:255',
+            'hp' => 'nullable|string|max:20',
             'status' => 'required|string|in:open,in_progress,closed',
             'judul' => 'required|string|max:255',
             'detail' => 'required|string',
@@ -249,7 +250,6 @@ class TicketController extends Controller
             $rules = array_merge($rules, [
                 'id_ktp' => 'required|string|max:100',
                 'nomor_rekening' => 'required|string|max:100',
-                'hp' => 'required|string|max:20',
                 'nama_ibu' => 'nullable|string|max:255',
                 'alamat' => 'nullable|string',
                 'tempat_lahir' => 'nullable|string|max:255',
@@ -281,11 +281,12 @@ class TicketController extends Controller
         $ticket->email = $request->input('email');
         $ticket->kategori = $request->input('kategori');
         $ticket->tipe_pelapor = $request->input('tipe_pelapor');
+        // HP is a top-level field now (always save if provided)
+        $ticket->hp = $request->input('hp');
         // nasabah fields
         if ($request->input('tipe_pelapor') === 'Nasabah') {
             $ticket->id_ktp = $request->input('id_ktp');
             $ticket->nomor_rekening = $request->input('nomor_rekening');
-            $ticket->hp = $request->input('hp');
             $ticket->nama_ibu = $request->input('nama_ibu');
             $ticket->alamat = $request->input('alamat');
             $ticket->tempat_lahir = $request->input('tempat_lahir');
@@ -356,6 +357,7 @@ class TicketController extends Controller
             'email' => 'required|email|max:255',
             'kategori' => 'required|string|max:255',
             'status' => 'required|string',
+            'hp' => 'nullable|string|max:20',
             'judul' => 'required|string|max:255',
             'detail' => 'required|string',
         ];
@@ -370,6 +372,7 @@ class TicketController extends Controller
         $ticket->detail = $request->input('detail');
         // optional fields
         if ($request->filled('officer')) $ticket->officer = $request->input('officer');
+        if ($request->filled('hp')) $ticket->hp = $request->input('hp');
         $ticket->save();
 
         ActivityLog::create([
