@@ -220,6 +220,13 @@ class TicketController extends Controller
             } else {
                 $ticket = Ticket::where('nomor_tiket', $nomorTiket)->first();
             }
+
+            // Post-Redirect-Get: avoid browser re-submitting the POST on reload
+            if ($ticket) {
+                return redirect()->route('admin.tindak-lanjut', ['ticket_id' => $ticket->id, 'nomor_tiket' => $ticket->nomor_tiket]);
+            } else {
+                return redirect()->route('admin.tindak-lanjut');
+            }
         } else if ($nomorTiket) {
             $ticket = Ticket::where('nomor_tiket', $nomorTiket)->first();
         } else if ($ticketId) {

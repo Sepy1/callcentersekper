@@ -1,6 +1,83 @@
 @extends('layouts.user_type.auth')
 
 @section('content')
+
+<style>
+
+    .timeline-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* === CARD === */
+.timeline-card {
+    background: #ffffff;
+    width: 100%;
+    max-width: 100%;
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,.06);
+    position: relative;
+    z-index: 2;
+}
+
+.timeline-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0,0,0,.08);
+    transition: all .2s ease;
+}
+
+.timeline-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+/* Modern Timeline */
+.timeline {
+    position: relative;
+    padding-left: 2.5rem;
+}
+
+
+/* vertical line */
+.timeline::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 1rem;
+    width: 2px;
+    height: 100%;
+    background: #e5e7eb;
+}
+
+/* === ITEM === */
+.timeline-item {
+    position: relative;
+    display: flex;
+    margin-bottom: 1.75rem;
+}   
+
+/* === MARKER / DOT === */
+.timeline-marker {
+    position: absolute;
+    left: -1.45rem;
+    top: 0.35rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #6b7280;
+    border: 3px solid #fff;
+    z-index: 3;
+}
+
+/* === CONTENT === */
+.timeline-content {
+    width: 100%;
+}
+</style>
+
+
 <div class="container-fluid py-2">
 	<style>
 		/* flip card for ticket detail */
@@ -131,7 +208,14 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="card h-100">
-                                        <div class="card-header pb-0"><h6 class="mb-0">Officer Tertugaskan (TL & Lampiran)</h6></div>
+                                        <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+                                            <h6 class="mb-0">Officer Tertugaskan (TL & Lampiran)</h6>
+                                            <div>
+                                                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#ticket-history-modal" id="btn-history">
+                                                    <i class="fas fa-history me-1"></i>History
+                                                </button>
+                                            </div>
+                                        </div>
                                         <div class="card-body p-2">
                                             {{-- QA Summary (highlight orange) --}}
                                             <div class="card mb-2" style="background:#ff7a00;color:#fff;">
@@ -195,6 +279,7 @@
                                             @else
                                                 <div class="text-muted small">Belum ada officer</div>
                                             @endif
+                                                {{-- History will be shown in a modal (triggered by the History button) --}}
                                         </div>
                                     </div>
                                 </div>
@@ -326,6 +411,121 @@
 </div>
 
 @if(!empty($ticket))
+(function(){})();
+<!-- Modal: Ticket History -->
+@php
+    $history = \App\Models\ActivityLog::where('ticket_id', $ticket->id)
+        ->orderBy('created_at')
+        ->get();
+
+    // If a summary 'ticket_assigned_officers_updated' exists we will hide
+    // the per-id assign/unassign entries to avoid duplicates and prefer
+    // the human-readable summary (it contains officer names).
+    $hasAssignSummary = $history->contains('action', 'ticket_assigned_officers_updated');
+
+    $map = [
+        'ticket_created' => ['Tiket dibuat', 'success'],
+        'officer_assigned' => ['Officer ditetapkan', 'info'],
+        'officer_unassigned' => ['Officer dicabut', 'secondary'],
+        'ticket_assigned_officers_updated' => ['Officer diperbarui', 'info'],
+        'ticket_updated' => ['Tiket diperbarui', 'warning'],
+        'status_changed' => ['Status diperbarui', 'primary'],
+        'ticket_deleted' => ['Tiket dihapus', 'danger'],
+        'officer_tindak_lanjut' => ['Tindak Lanjut Officer', 'dark'],
+        'officer_status_changed' => ['Status Officer', 'primary'],
+    ];
+@endphp
+
+<div class="modal fade" id="ticket-history-modal" tabindex="-1" aria-labelledby="ticketHistoryLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">
+                    Riwayat Tiket — {{ $ticket->nomor_tiket }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+            @if($history->isEmpty())
+        <div class="text-muted">Tidak ada riwayat.</div>
+    @else
+        <div class="timeline">
+            @foreach($history as $h)
+                @php
+                    $when = \Illuminate\Support\Carbon::parse($h->created_at)->format('d M Y H:i');
+                    $label = $h->action;
+                    $detail = $h->detail ?? '';
+
+                    // Skip verbose per-id assign/unassign entries when a summary exists
+                    if (in_array($label, ['officer_assigned','officer_unassigned']) && isset($hasAssignSummary) && $hasAssignSummary) {
+                        continue;
+                    }
+
+                    // If this is an assign/unassign entry without summary, try to resolve officer id to name
+                    if (in_array($label, ['officer_assigned','officer_unassigned']) && $detail) {
+                        if (preg_match('/(\d+)/', $detail, $m)) {
+                            $u = \App\Models\User::find($m[1]);
+                            if ($u) {
+                                $detail = ($label === 'officer_assigned' ? 'Assigned officer: ' : 'Unassigned officer: ') . $u->name;
+                            }
+                        }
+                    }
+
+                    // If the log row has a user_id (e.g., officer actions), show the officer name
+                    if (empty($detail) && !empty($h->user_id)) {
+                        $u = \App\Models\User::find($h->user_id);
+                        if ($u) {
+                            $detail = $u->name;
+                        }
+                    } else {
+                        // For entries that include user_id plus detail, prepend the name for clarity
+                        if (!empty($h->user_id)) {
+                            $u = \App\Models\User::find($h->user_id);
+                            if ($u) {
+                                $detail = $u->name . (trim($detail) ? ' — ' . $detail : '');
+                            }
+                        }
+                    }
+
+                    [$title, $color] = $map[$label] ?? [ucfirst(str_replace('_', ' ', $label)), 'dark'];
+                @endphp
+
+                <div class="timeline-item">
+                    <div class="timeline-marker bg-{{ $color }}" title="{{ $title }}"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-card">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1 fw-semibold text-{{ $color }}">
+                                        {{ $title }}
+                                    </h6>
+                                    @if($detail)
+                                        <div class="text-muted small" style="white-space: pre-line;">
+                                            {{ $detail }}
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="text-muted small text-end ms-3">
+                                    {{ $when }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
+</div>
+
+            <div class="modal-footer">
+                <button class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
 (function(){
     const nomor = @json($ticket->nomor_tiket);

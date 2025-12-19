@@ -66,8 +66,10 @@
     </div>
   @endif
 
-  {{-- include floating notification bell partial --}}
-  @include('partials.notification_bell')
+  {{-- include floating notification bell partial (hide on login/session/forgot/reset pages) --}}
+  @if (!Request::is('session') && !Request::is('login') && !Request::is('*forgot*') && !Request::is('*reset*'))
+    @include('partials.notification_bell')
+  @endif
 
     <!--   Core JS Files   -->
   <script src="../assets/js/core/popper.min.js"></script>

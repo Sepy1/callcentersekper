@@ -38,11 +38,11 @@ class SessionsController extends Controller
             }
             $role = Auth::user()->role;
             if ($role === 'admin') {
-                return redirect('/admin/dashboard')->with(['success'=>'You are logged in as admin.']);
+                return redirect('/admin/dashboard-admin')->with(['success'=>'You are logged in as admin.']);
             } elseif ($role === 'officer') {
-                return redirect('/officer/dashboard')->with(['success'=>'You are logged in as officer.']);
+                return redirect('/officer/dashboard-officer')->with(['success'=>'You are logged in as officer.']);
             } elseif ($role === 'qa') {
-                return redirect('/qa/dashboard')->with(['success'=>'You are logged in as QA.']);
+                return redirect('/qa/dashboard-qa')->with(['success'=>'You are logged in as QA.']);
             } else {
                 return redirect('dashboard')->with(['success'=>'You are logged in.']);
             }
