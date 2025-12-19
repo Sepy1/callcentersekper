@@ -469,13 +469,29 @@ class TicketController extends Controller
         $jumlahSelesai = $tickets->where('status', 'closed')->count() + $tickets->where('status', 'resolved')->count();
         $jumlahProses = $tickets->whereIn('status', ['open', 'in_progress'])->count();
 
-        // Rata-rata waktu penyelesaian (jam) untuk tiket yang selesai
-        $durations = $tickets->filter(function($t){
-            return $t->created_at && $t->closing_at;
-        })->map(function($t){
-            return max(0, $t->closing_at->diffInHours($t->created_at));
-        });
-        $avgHours = $durations->count() ? round($durations->average(), 2) : 0;
+        // Rata-rata waktu penyelesaian (jam) untuk tiket yang berstatus 'closed'
+        // Compute average resolution hours for closed tickets using DB (more reliable)
+        try {
+            $avgRow = DB::table('tickets')
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->whereNotNull('closing_at')
+                ->whereRaw("LOWER(COALESCE(status, '')) = ?", ['closed'])
+                ->selectRaw('AVG(TIMESTAMPDIFF(HOUR, created_at, closing_at)) as avg_hours, COUNT(*) as cnt')
+                ->first();
+
+            $avgHours = $avgRow && $avgRow->cnt ? round((float)$avgRow->avg_hours, 2) : 0;
+        } catch (\Exception $e) {
+            // Fallback to collection-based calculation if DB function not available
+            $closedTickets = $tickets->filter(function($t){
+                return ($t->status === 'closed') && $t->created_at && $t->closing_at;
+            });
+
+            $durations = $closedTickets->map(function($t){
+                return max(0, $t->closing_at->diffInHours($t->created_at));
+            });
+
+            $avgHours = $durations->count() ? round($durations->average(), 2) : 0;
+        }
 
         $data = [
             'startDate' => $startDate,

@@ -46,13 +46,31 @@
           <td>{{ $t->kategori }}</td>
           <td>
             @if(isset($t->officers) && $t->officers->isNotEmpty())
-              {{ $t->officers->pluck('name')->join(', ') }}
+              {{ $t->officers->pluck('name')->filter()->unique()->values()->join(', ') }}
             @else
               {{ $t->officer }}
             @endif
           </td>
           <td>{{ ucfirst($t->status) }}</td>
-          <td>{{ \Illuminate\Support\Str::limit($t->closing_notes ?? $t->judul ?? $t->detail ?? '', 60) }}</td>
+          @php
+            $keterangan = $t->closing_notes ?? $t->judul ?? $t->detail ?? '';
+            $resolutionHours = null;
+            if (!empty($t->created_at) && !empty($t->closing_at)) {
+              try {
+                $cAt = $t->created_at instanceof \Carbon\Carbon ? $t->created_at : \Carbon\Carbon::parse($t->created_at);
+                $clAt = $t->closing_at instanceof \Carbon\Carbon ? $t->closing_at : \Carbon\Carbon::parse($t->closing_at);
+                $resolutionHours = $clAt->diffInHours($cAt);
+              } catch (\Throwable $e) {
+                $resolutionHours = null;
+              }
+            }
+          @endphp
+          <td>
+            {{ \Illuminate\Support\Str::limit($keterangan, 60) }}
+            @if($resolutionHours !== null)
+              ({{ $resolutionHours }} jam)
+            @endif
+          </td>
         </tr>
       @endforeach
       @if($tickets->isEmpty())
@@ -69,14 +87,24 @@
       <li>Jumlah Pengaduan Diterima : {{ $jumlahDiterima }}</li>
       <li>Jumlah Pengaduan Selesai : {{ $jumlahSelesai }}</li>
       <li>Jumlah Pengaduan Dalam Proses : {{ $jumlahProses }}</li>
-      <li>Rata-rata Waktu Penyelesaian : {{ $avgHours }} jam/hari</li>
+      @php
+        $avgHoursNumeric = is_numeric($avgHours) ? (float)$avgHours : 0;
+        if ($avgHoursNumeric < 24 && $avgHoursNumeric > 0) {
+          $avgDisplay = round($avgHoursNumeric, 2) . ' jam';
+        } elseif ($avgHoursNumeric >= 24) {
+          $avgDisplay = round($avgHoursNumeric / 24, 2) . ' hari';
+        } else {
+          $avgDisplay = '0 jam';
+        }
+      @endphp
+      <li>Rata-rata Waktu Penyelesaian : {{ $avgDisplay }}</li>
     </ol>
   </div>
 
   <div class="sign-row">
-    <div class="signature">Dibuat<br><br><br>_________________<br>CSA</div>
-    <div class="signature">Diperiksa<br><br><br>_________________<br>Kepala Bidang Sekretaris, Perusahaan & Humas</div>
-    <div class="signature">Disetujui<br><br><br>_________________<br>Sekretaris Perusahaan</div>
+    <div class="signature">Dibuat<br><br><br><br><br>{{ auth()->user()->name ?? '' }}<br>CSA</div>
+    <div class="signature">Diperiksa<br><br><br><br><br>Putri Sabati Damaristi, SE<br>Kepala Bidang Sekretaris, Perusahaan & Humas</div>
+    <div class="signature">Disetujui<br><br><br><br><br>Fandy Farisa, SH., M.Kn<br>Sekretaris Perusahaan</div>
   </div>
 
 </body>
