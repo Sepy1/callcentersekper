@@ -10,6 +10,10 @@ use App\Models\RecycleTicket;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Notification as NotificationFacade;
+use App\Notifications\TicketCreatedNotification;
+use App\Notifications\TicketAssignedNotification;
+use App\Notifications\TicketClosedNotification;
 
 class TicketController extends Controller
 {
@@ -111,6 +115,14 @@ class TicketController extends Controller
                         $linkAssign = url('officer/tindak-lanjut') . '?ticket_id=' . $ticket->id . '&nomor_tiket=' . urlencode($ticket->nomor_tiket);
                         $this->notifyOfficers($toAdd, $titleAssign, $msgAssign, $linkAssign, ['ticket_id' => $ticket->id, 'action' => 'assigned']);
 
+                        // send email to newly assigned officers
+                        try {
+                            $users = User::whereIn('id', $toAdd)->get();
+                            NotificationFacade::send($users, new TicketAssignedNotification($ticket));
+                        } catch (\Throwable $e) {
+                            \Log::error('send ticket assigned email failed: ' . $e->getMessage());
+                        }
+
                         // log additions
                         foreach ($toAdd as $oid) {
                             ActivityLog::create([
@@ -178,6 +190,15 @@ class TicketController extends Controller
                             'detail' => "Status: {$oldStatus} -> closed; closing_notes: " . ($ticket->closing_notes ?? ''),
                             'ip' => $request->ip(),
                         ]);
+
+                        // notify pelapor by email that ticket is closed
+                        try {
+                            if (!empty($ticket->email)) {
+                                NotificationFacade::route('mail', $ticket->email)->notify(new TicketClosedNotification($ticket));
+                            }
+                        } catch (\Throwable $e) {
+                            \Log::error('send ticket closed email failed: ' . $e->getMessage());
+                        }
                     } else {
                         $oldStatus = $ticket->status;
                         $ticket->status = $newStatus;
@@ -299,6 +320,23 @@ class TicketController extends Controller
         $link = url('admin/tickets/' . $ticket->id);
         $this->notifyAdminsAndQa($title, $msg, $link, ['ticket_id' => $ticket->id, 'source' => 'form']);
 
+        // send email notifications: admins/qa
+        try {
+            $users = User::whereIn('role', ['admin','qa'])->get();
+            NotificationFacade::send($users, new TicketCreatedNotification($ticket, 'admin'));
+        } catch (\Throwable $e) {
+            \Log::error('send ticket created email failed: ' . $e->getMessage());
+        }
+
+        // send email to pelapor (by email address)
+        try {
+            if (!empty($ticket->email)) {
+                NotificationFacade::route('mail', $ticket->email)->notify(new TicketCreatedNotification($ticket, 'pelapor'));
+            }
+        } catch (\Throwable $e) {
+            \Log::error('send ticket created email to pelapor failed: ' . $e->getMessage());
+        }
+
         return redirect()->route('admin.tickets')->with('success', 'Tiket berhasil dibuat.');
     }
 
@@ -376,16 +414,9 @@ class TicketController extends Controller
     {
         $startDate = $request->input('start_date', now()->subMonth()->format('Y-m-d'));
         $endDate = $request->input('end_date', now()->format('Y-m-d'));
+        $role = $request->input('role', 'admin');
 
-        // Ambil data jumlah tiket berdasarkan tanggal
-        $data = Ticket::whereBetween('created_at', [$startDate, $endDate])
-            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
-            ->groupBy('date')
-            ->orderBy('date', 'asc')
-            ->get()
-            ->keyBy('date');
-
-        // Generate semua tanggal dalam rentang
+        // Prepare date period
         $period = new \DatePeriod(
             new \DateTime($startDate),
             new \DateInterval('P1D'),
@@ -394,16 +425,36 @@ class TicketController extends Controller
 
         $labels = [];
         $values = [];
+
         foreach ($period as $date) {
             $d = $date->format('Y-m-d');
             $labels[] = $date->format('d M Y');
-            $values[] = isset($data[$d]) ? $data[$d]->count : 0;
-        }
 
-        return response()->json([
-            'labels' => $labels,
-            'values' => $values,
-        ]);
+            if ($role === 'officer') {
+                // Count tickets created on date where the ticket is assigned to current officer
+                $cnt = DB::table('tickets')
+                    ->join('ticket_officer', 'tickets.id', '=', 'ticket_officer.ticket_id')
+                    ->whereDate('tickets.created_at', $d)
+                    ->where('ticket_officer.officer_id', auth()->id())
+                    ->distinct('tickets.id')
+                    ->count('tickets.id');
+            } elseif ($role === 'qa') {
+                // Count tickets created on date where ALL assigned officers have status = 'proses_qa' (case-insensitive)
+                $cnt = DB::table('tickets')
+                    ->whereDate('tickets.created_at', $d)
+                    ->whereRaw('(select count(*) from ticket_officer where ticket_officer.ticket_id = tickets.id) > 0')
+                    ->whereRaw("(select count(*) from ticket_officer where ticket_officer.ticket_id = tickets.id and LOWER(ticket_officer.status) = 'proses_qa') = (select count(*) from ticket_officer where ticket_officer.ticket_id = tickets.id)")
+                    ->count();
+            } else {
+                // admin / default: count all tickets created on date
+                $cnt = DB::table('tickets')
+                    ->whereDate('created_at', $d)
+                    ->count();
+            }
+
+            $values[] = (int) $cnt;
+        }
+        return response()->json(['labels' => $labels, 'values' => $values]);
     }
 
     // Download nominatif XLS (Excel-friendly HTML table) — semua kolom tickets

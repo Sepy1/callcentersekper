@@ -14,7 +14,7 @@
                 <div class="col-8">
                   <div class="numbers">
                     <p class="text-sm mb-0 text-uppercase font-weight-bold">Tiket Open</p>
-                    <h5 class="font-weight-bolder">{{ \App\Models\Ticket::where('status', 'open')->count() }}</h5>
+                    <h5 class="font-weight-bolder">{{ \App\Models\Ticket::whereHas('officers', function($q){ $q->where('ticket_officer.officer_id', auth()->id()); })->where('status', 'open')->count() }}</h5>
                   </div>
                 </div>
                 <div class="col-4 text-end">
@@ -35,7 +35,7 @@
                 <div class="col-8">
                   <div class="numbers">
                     <p class="text-sm mb-0 text-uppercase font-weight-bold">In-Progress</p>
-                    <h5 class="font-weight-bolder">{{ \App\Models\Ticket::where('status', 'in_progress')->count() }}</h5>
+                    <h5 class="font-weight-bolder">{{ \App\Models\Ticket::whereHas('officers', function($q){ $q->where('ticket_officer.officer_id', auth()->id()); })->where('status', 'in_progress')->count() }}</h5>
                   </div>
                 </div>
                 <div class="col-4 text-end">
@@ -56,7 +56,7 @@
                 <div class="col-8">
                   <div class="numbers">
                     <p class="text-sm mb-0 text-uppercase font-weight-bold">Tiket Resolved</p>
-                    <h5 class="font-weight-bolder">{{ \App\Models\Ticket::where('status', 'resolved')->count() }}</h5>
+                    <h5 class="font-weight-bolder">{{ \App\Models\Ticket::whereHas('officers', function($q){ $q->where('ticket_officer.officer_id', auth()->id()); })->where('status', 'resolved')->count() }}</h5>
                   </div>
                 </div>
                 <div class="col-4 text-end">
@@ -77,7 +77,7 @@
                 <div class="col-8">
                   <div class="numbers">
                     <p class="text-sm mb-0 text-uppercase font-weight-bold">Tiket Closed</p>
-                    <h5 class="font-weight-bolder">{{ \App\Models\Ticket::where('status', 'closed')->count() }}</h5>
+                    <h5 class="font-weight-bolder">{{ \App\Models\Ticket::whereHas('officers', function($q){ $q->where('ticket_officer.officer_id', auth()->id()); })->where('status', 'closed')->count() }}</h5>
                   </div>
                 </div>
                 <div class="col-4 text-end">
@@ -98,7 +98,7 @@
                 <div class="col-8">
                   <div class="numbers">
                     <p class="text-sm mb-0 text-uppercase font-weight-bold">Tiket Rejected</p>
-                    <h5 class="font-weight-bolder">{{ \App\Models\Ticket::where('status', 'rejected')->count() }}</h5>
+                    <h5 class="font-weight-bolder">{{ \App\Models\Ticket::whereHas('officers', function($q){ $q->where('ticket_officer.officer_id', auth()->id()); })->where('status', 'rejected')->count() }}</h5>
                   </div>
                 </div>
                 <div class="col-4 text-end">
@@ -125,7 +125,7 @@
     </div>
   </div>
 
-  {{-- Card untuk menampilkan semua tiket dengan status open dan resolved --}}
+  {{-- Card untuk menampilkan semua tiket assigned ke officer dengan pivot.status != proses_qa --}}
   <div class="row mt-4">
     <div class="col-lg-6 mb-lg-0 mb-4 d-flex">
       <div class="card h-100 w-100">
@@ -145,7 +145,7 @@
               </thead>
               <tbody>
                 @php
-                  $tickets = \App\Models\Ticket::whereIn('status', ['open', 'resolved'])
+                  $tickets = \App\Models\Ticket::whereHas('officers', function($q){ $q->where('ticket_officer.officer_id', auth()->id())->where('ticket_officer.status', '!=', 'proses_qa'); })
                     ->orderBy('created_at', 'desc')
                     ->get();
                 @endphp
@@ -161,7 +161,7 @@
                     </td>
                     <td>{{ \Illuminate\Support\Str::limit($ticket->judul, 30) }}</td>
                     <td>
-                      <a href="{{ url('admin/tindak-lanjut?ticket_id=' . $ticket->id) }}" class="btn btn-sm btn-warning">
+                      <a href="{{ url('officer/tindak-lanjut?ticket_id=' . $ticket->id) }}" class="btn btn-sm btn-warning">
                         Proses
                       </a>
                     </td>
@@ -202,18 +202,6 @@
         </div>
       </div>
 
-      {{-- Generate Laporan (nominatif / PDF) restored --}}
-      <div class="card mt-3">
-        <div class="card-body p-3">
-          <h6 class="text-uppercase font-weight-bold mb-3">Generate Laporan</h6>
-          <p class="text-sm text-muted">Unduh nominatif atau generate PDF berdasarkan periode filter.</p>
-          <div class="d-flex gap-2">
-            <button id="download-nominatif" class="btn btn-outline-secondary btn-sm">Download Nominatif</button>
-            <button id="generate-pdf" class="btn btn-primary btn-sm">Generate PDF</button>
-          </div>
-        </div>
-      </div>
-
     </div>
   </div>
 </div>
@@ -228,7 +216,7 @@
     var baseUrl = "{{ url('/') }}";
 
     function fetchChartData(startDate, endDate) {
-      var url = baseUrl + '/admin/tickets/chart-data?start_date=' + encodeURIComponent(startDate) + '&end_date=' + encodeURIComponent(endDate);
+      var url = baseUrl + '/admin/tickets/chart-data?role=officer&start_date=' + encodeURIComponent(startDate) + '&end_date=' + encodeURIComponent(endDate);
       fetch(url)
         .then(response => {
           if (!response.ok) throw new Error('Network response was not ok');
@@ -293,30 +281,6 @@
       const endDate = document.getElementById('end_date').value;
       fetchChartData(startDate, endDate);
     });
-
-    // Download nominatif: buka endpoint download dengan parameter tanggal
-    var dlBtn = document.getElementById('download-nominatif');
-    if (dlBtn) {
-      dlBtn.addEventListener('click', function () {
-        const startDate = document.getElementById('start_date').value || '';
-        const endDate = document.getElementById('end_date').value || '';
-        var url = baseUrl + '/admin/tickets/download-nominatif?start_date=' + encodeURIComponent(startDate) + '&end_date=' + encodeURIComponent(endDate);
-        // navigate to URL to trigger file download
-        window.location = url;
-      });
-    }
-
-    // Generate PDF button currently disabled / stub
-    var pdfBtn = document.getElementById('generate-pdf');
-    if (pdfBtn) {
-      pdfBtn.addEventListener('click', function () {
-        const startDate = document.getElementById('start_date').value || '';
-        const endDate = document.getElementById('end_date').value || '';
-        var url = baseUrl + '/admin/tickets/generate-pdf?start_date=' + encodeURIComponent(startDate) + '&end_date=' + encodeURIComponent(endDate);
-        // open in new tab/window so browser PDF preview works
-        window.open(url, '_blank');
-      });
-    }
 
     // Fetch initial data for the last 30 days
     const today = new Date().toISOString().split('T')[0];

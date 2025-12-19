@@ -137,6 +137,14 @@
       {{-- QA --}}
       @if(auth()->check() && auth()->user()->role === 'qa')
       <li class="nav-item">
+        <a class="nav-link {{ (Request::is('qa/dashboard-qa') ? 'active bg-gradient-warning text-white' : '') }}" href="{{ url('qa/dashboard-qa') }}">
+          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+            <i class="fas fa-chart-line text-dark"></i>
+          </div>
+          <span class="nav-link-text ms-1">Dashboard QA</span>
+        </a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link {{ (Request::is('qa/tickets') ? 'active bg-gradient-warning text-white' : '') }}" href="{{ url('qa/tickets') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <i class="fas fa-ticket-alt text-dark"></i>
@@ -156,6 +164,14 @@
 
       {{-- OFFICER --}}
       @if(auth()->check() && auth()->user()->role === 'officer')
+      <li class="nav-item">
+        <a class="nav-link {{ (Request::is('officer/dashboard-officer') ? 'active bg-gradient-warning text-white' : '') }}" href="{{ url('officer/dashboard-officer') }}">
+          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+            <i class="fas fa-chart-line text-dark"></i>
+          </div>
+          <span class="nav-link-text ms-1">Dashboard Officer</span>
+        </a>
+      </li>
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('officer/tickets') ? 'active bg-gradient-warning text-white' : '') }}" href="{{ url('officer/tickets') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">

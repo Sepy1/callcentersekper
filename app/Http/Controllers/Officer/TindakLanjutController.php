@@ -16,7 +16,10 @@ class TindakLanjutController extends Controller
 	public function index(Request $request)
 	{
 		$ticket = null;
-		if ($request->filled('nomor_tiket')) {
+		// support direct link by ticket_id or nomor_tiket
+		if ($request->filled('ticket_id')) {
+			$ticket = Ticket::find($request->input('ticket_id'));
+		} elseif ($request->filled('nomor_tiket')) {
 			$ticket = Ticket::where('nomor_tiket', $request->input('nomor_tiket'))->first();
 		}
 		return view('officer.tindak-lanjut', compact('ticket'));

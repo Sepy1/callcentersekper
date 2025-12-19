@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification as NotificationFacade;
+use App\Notifications\TicketCreatedNotification;
+use App\Notifications\TicketAssignedNotification;
 
 class TicketApiController extends Controller
 {
@@ -104,6 +107,28 @@ class TicketApiController extends Controller
             }
 
             DB::commit();
+
+            // notify admins/qa and pelapor via email
+            try {
+                $users = User::whereIn('role', ['admin','qa'])->get();
+                NotificationFacade::send($users, new TicketCreatedNotification($ticket, 'admin'));
+            } catch (\Throwable $e) { \Log::error('send ticket created email (api) failed: ' . $e->getMessage()); }
+
+            try {
+                if (!empty($ticket->email)) {
+                    NotificationFacade::route('mail', $ticket->email)->notify(new TicketCreatedNotification($ticket, 'pelapor'));
+                }
+            } catch (\Throwable $e) { \Log::error('send ticket created email to pelapor (api) failed: ' . $e->getMessage()); }
+
+            // notify assigned officers via email if any
+            try {
+                if (!empty($ids) && is_array($ids)) {
+                    $users = User::whereIn('id', $ids)->get();
+                    if ($users->isNotEmpty()) {
+                        NotificationFacade::send($users, new TicketAssignedNotification($ticket));
+                    }
+                }
+            } catch (\Throwable $e) { \Log::error('send ticket assigned email (api) failed: ' . $e->getMessage()); }
             return response()->json(['success' => true, 'ticket' => $ticket->fresh()->load('officers')], 201);
         } catch (\Throwable $e) {
             DB::rollBack();

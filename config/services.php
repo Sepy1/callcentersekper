@@ -29,5 +29,12 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
+    
+    'dep' => [
+    'base_url'   => env('DEP_BASE_URL'),
+    'system_id'  => env('DEP_SYSTEM_ID'),
+    'secret_key' => env('DEP_SECRET_KEY'),
+    'salt'       => env('DEP_SALT'),
+],
 
 ];

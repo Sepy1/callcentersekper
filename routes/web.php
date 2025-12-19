@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\TicketController;
 use App\Http\Controllers\Officer\TindakLanjutController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\WhatsappTemplateController;
+use App\Http\Controllers\WhatsappSendTemplateController;
 
 /*
 |--------------------------------------------------------------------------
@@ -114,6 +116,9 @@ Route::group(['middleware' => 'guest'], function () {
 Route::get('/login', function () {
     return view('session/login-session');
 })->name('login');
+
+// Public endpoint to send WhatsApp messages (no role/auth middleware)
+Route::post('/send-whatsapp', [\App\Http\Controllers\WhatsappController::class, 'send']);
 Route::group(['middleware' => 'auth'], function () {
     // Tindak lanjut admin
     Route::match(['get', 'post'], '/admin/tindak-lanjut', [TicketController::class, 'tindakLanjut'])->name('admin.tindak-lanjut');
@@ -139,20 +144,24 @@ Route::group(['middleware' => 'auth'], function () {
         $canResolve = false;
         $assignedOfficers = collect();
 
-        if ($request->filled('nomor_tiket')) {
+        // Accept either ticket_id or nomor_tiket as input (links use ticket_id)
+        if ($request->filled('ticket_id')) {
+            $ticket = \App\Models\Ticket::find($request->input('ticket_id'));
+        } elseif ($request->filled('nomor_tiket')) {
             $ticket = \App\Models\Ticket::where('nomor_tiket', $request->input('nomor_tiket'))->first();
-            if ($ticket) {
-                // load pivot officer records
-                $assignedOfficers = \DB::table('ticket_officer')
-                    ->where('ticket_id', $ticket->id)
-                    ->get();
+        }
 
-                // canResolve true if there is at least one assigned officer and ALL have status 'proses_qa'
-                if ($assignedOfficers->isNotEmpty()) {
-                    $canResolve = $assignedOfficers->every(fn($r) => $r->status === 'proses_qa');
-                } else {
-                    $canResolve = false;
-                }
+        if ($ticket) {
+            // load pivot officer records
+            $assignedOfficers = \DB::table('ticket_officer')
+                ->where('ticket_id', $ticket->id)
+                ->get();
+
+            // canResolve true if there is at least one assigned officer and ALL have status 'proses_qa'
+            if ($assignedOfficers->isNotEmpty()) {
+                $canResolve = $assignedOfficers->every(fn($r) => strtolower($r->status) === 'proses_qa');
+            } else {
+                $canResolve = false;
             }
         }
 
@@ -218,6 +227,16 @@ Route::group(['middleware' => 'auth'], function () {
                                     'is_read' => false,
                                     'data' => ['ticket_id' => $ticket->id, 'nomor_tiket' => $ticket->nomor_tiket],
                                 ]);
+                            }
+
+                            // send email to admins as well
+                            try {
+                                $adminUsers = \App\Models\User::where('role', 'admin')->get();
+                                if ($adminUsers->isNotEmpty()) {
+                                    \Illuminate\Support\Facades\Notification::send($adminUsers, new \App\Notifications\TicketQaResolvedNotification($ticket));
+                                }
+                            } catch (\Throwable $e) {
+                                \Illuminate\Support\Facades\Log::error('send QA resolved email failed: ' . $e->getMessage());
                             }
                         } catch (\Throwable $e) {
                             \Illuminate\Support\Facades\Log::error('notify admins on QA resolved failed', ['ticket_id'=>$ticket->id,'err'=>$e->getMessage()]);
@@ -309,6 +328,8 @@ Route::group(['middleware' => 'auth'], function () {
     })->middleware('auth')->name('officer.tickets');
 
     // Chat API (server-side)
+Route::post('/whatsapp/send-template', [WhatsappSendTemplateController::class, 'sendTemplate']);
+    Route::post('/whatsapp/template/create', [WhatsappTemplateController::class, 'createTemplate']);
     Route::get('/chat/messages/{nomor_tiket}', [ChatController::class, 'messages'])->name('chat.messages');
     Route::post('/chat/messages', [ChatController::class, 'send'])->name('chat.send');
 
@@ -316,6 +337,16 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/admin/dashboard-admin', function () {
 		return view('admin.dashboard-admin');
 	})->middleware('auth')->name('admin.dashboard.admin');
+
+    // Officer: custom dashboard view (dashboard-officer)
+    Route::get('/officer/dashboard-officer', function () {
+        return view('officer.dashboard-officer');
+    })->middleware('auth')->name('officer.dashboard-officer');
+
+    // QA: custom dashboard view (dashboard-qa)
+    Route::get('/qa/dashboard-qa', function () {
+        return view('qa.dashboard-qa');
+    })->middleware('auth')->name('qa.dashboard-qa');
 });
 
 // mark-as-read and redirect notification (only for authenticated users)

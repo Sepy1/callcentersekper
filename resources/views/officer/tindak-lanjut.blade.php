@@ -88,7 +88,7 @@
                         $functions_disabled = !empty($ticket) && in_array($ticket->status, ['closed', 'rejected']);
 					@endphp
 
-					@if(!request('nomor_tiket'))
+					@if(!request('nomor_tiket') && !request('ticket_id'))
 						<div class="text-muted small">Masukkan nomor tiket untuk mulai tindak lanjut.</div>
 					@elseif(!$ticket)
 						<div class="card"><div class="card-body text-center text-danger">Tiket tidak ditemukan.</div></div>
