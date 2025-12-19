@@ -90,6 +90,18 @@ class TindakLanjutController extends Controller
 			]);
 		}
 
+		// jika ada update pivot ke 'proses_qa', pastikan updated_at diset dan cek semua officer
+		try {
+			if (isset($ticket) && $ticket instanceof Ticket) {
+				// pastikan pivot update menyertakan updated_at; jika Anda melakukan raw update, sertakan now()
+				// kemudian panggil check untuk notifikasi QA
+				Ticket::notifyQaIfAllOfficersProsesQa($ticket->id);
+			}
+		} catch (\Throwable $e) {
+			// jangan ganggu alur utama; log jika perlu
+			\Illuminate\Support\Facades\Log::error('TindakLanjutController::proses notifyQa error', ['err' => $e->getMessage()]);
+		}
+
 		return back()->with('success', 'Tindak lanjut berhasil disimpan.');
 	}
 }

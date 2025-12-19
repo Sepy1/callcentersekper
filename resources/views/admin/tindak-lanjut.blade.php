@@ -661,26 +661,4 @@ document.addEventListener('DOMContentLoaded', function(){
     if (f) f.remove();
 });
 </script>
-<script>
-(function(){
-    function fitContainer() {
-        const container = document.querySelector('.container-fluid');
-        if (!container) return;
-        container.style.transformOrigin = 'top center';
-        container.style.transition = 'transform 160ms ease';
-        container.style.transform = 'none';
-        requestAnimationFrame(()=> {
-            const cw = container.scrollWidth, ch = container.scrollHeight;
-            const vw = window.innerWidth, vh = window.innerHeight;
-            const scale = Math.min(1, vw / cw, vh / ch);
-            container.style.transform = 'scale(' + scale + ')';
-            document.documentElement.style.overflow = 'hidden';
-            document.body.style.overflow = 'hidden';
-        });
-    }
-    window.addEventListener('resize', fitContainer);
-    window.addEventListener('orientationchange', fitContainer);
-    document.addEventListener('DOMContentLoaded', fitContainer);
-    setTimeout(fitContainer, 300);
-})();
-</script>
+

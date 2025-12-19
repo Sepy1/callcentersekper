@@ -9,6 +9,7 @@ use App\Models\ActivityLog;
 use App\Models\RecycleTicket;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class TicketController extends Controller
 {
@@ -53,17 +54,26 @@ class TicketController extends Controller
     public function tindakLanjut(Request $request)
     {
         $nomorTiket = $request->input('nomor_tiket');
+        $ticketId = $request->input('ticket_id');
         $ticket = null;
         $officers = User::where('role', 'officer')->get();
 
-        // jika yang membuka adalah QA dan ada nomor tiket, arahkan ke QA tindak-lanjut
-        if (auth()->check() && auth()->user()->role === 'qa' && $nomorTiket) {
-            return redirect()->route('qa.tindak-lanjut', ['nomor_tiket' => $nomorTiket]);
+        // jika yang membuka adalah QA dan ada nomor tiket atau ticket_id, arahkan ke QA tindak-lanjut dengan param yang sama
+        if (auth()->check() && auth()->user()->role === 'qa' && ($nomorTiket || $ticketId)) {
+            $params = [];
+            if ($ticketId) $params['ticket_id'] = $ticketId;
+            if ($nomorTiket) $params['nomor_tiket'] = $nomorTiket;
+            return redirect()->route('qa.tindak-lanjut', $params);
         }
 
         // Handle POST for eskalasi/tagging or status update
-        if ($request->isMethod('post') && $nomorTiket) {
-            $ticket = Ticket::where('nomor_tiket', $nomorTiket)->first();
+        if ($request->isMethod('post') && ($nomorTiket || $ticketId)) {
+            if ($ticketId) {
+                $ticket = Ticket::find($ticketId);
+            } else {
+                $ticket = Ticket::where('nomor_tiket', $nomorTiket)->first();
+            }
+
             if ($ticket) {
                 // Assign ke multi officer (array of officer_id) - simpan ke tabel pivot
                 if ($request->filled('officer_ids')) {
@@ -93,6 +103,13 @@ class TicketController extends Controller
                             ];
                         }
                         $ticket->officers()->attach($attachData);
+
+                        // notify newly assigned officers
+                        $titleAssign = "Ditetapkan ke tiket: {$ticket->nomor_tiket}";
+                        $msgAssign = "Anda ditugaskan pada tiket {$ticket->nomor_tiket}. Judul: " . \Illuminate\Support\Str::limit($ticket->judul ?? '', 120);
+                        // link langsung ke halaman tindak-lanjut officer yang membuka tiket tersebut
+                        $linkAssign = url('officer/tindak-lanjut') . '?ticket_id=' . $ticket->id . '&nomor_tiket=' . urlencode($ticket->nomor_tiket);
+                        $this->notifyOfficers($toAdd, $titleAssign, $msgAssign, $linkAssign, ['ticket_id' => $ticket->id, 'action' => 'assigned']);
 
                         // log additions
                         foreach ($toAdd as $oid) {
@@ -177,9 +194,15 @@ class TicketController extends Controller
                 }
             }
             // Refresh ticket after update
-            $ticket = Ticket::where('nomor_tiket', $nomorTiket)->first();
+            if ($ticketId) {
+                $ticket = Ticket::find($ticketId);
+            } else {
+                $ticket = Ticket::where('nomor_tiket', $nomorTiket)->first();
+            }
         } else if ($nomorTiket) {
             $ticket = Ticket::where('nomor_tiket', $nomorTiket)->first();
+        } else if ($ticketId) {
+            $ticket = Ticket::find($ticketId);
         }
 
         return view('admin.tindak-lanjut', compact('ticket', 'officers'));
@@ -270,6 +293,12 @@ class TicketController extends Controller
             'ip' => $request->ip(),
         ]);
 
+        // notify admin and qa about new ticket
+        $title = "Tiket baru: {$ticket->nomor_tiket}";
+        $msg = ($ticket->judul ? $ticket->judul . ' — ' : '') . \Illuminate\Support\Str::limit($ticket->detail ?? '', 120);
+        $link = url('admin/tickets/' . $ticket->id);
+        $this->notifyAdminsAndQa($title, $msg, $link, ['ticket_id' => $ticket->id, 'source' => 'form']);
+
         return redirect()->route('admin.tickets')->with('success', 'Tiket berhasil dibuat.');
     }
 
@@ -341,5 +370,82 @@ class TicketController extends Controller
 
 
         return redirect()->route('admin.tickets')->with('success', 'Tiket Berhasil Di Delete');
+    }
+
+    public function chartData(Request $request)
+    {
+        $startDate = $request->input('start_date', now()->subMonth()->format('Y-m-d'));
+        $endDate = $request->input('end_date', now()->format('Y-m-d'));
+
+        // Ambil data jumlah tiket berdasarkan tanggal
+        $data = Ticket::whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->groupBy('date')
+            ->orderBy('date', 'asc')
+            ->get()
+            ->keyBy('date');
+
+        // Generate semua tanggal dalam rentang
+        $period = new \DatePeriod(
+            new \DateTime($startDate),
+            new \DateInterval('P1D'),
+            (new \DateTime($endDate))->modify('+1 day')
+        );
+
+        $labels = [];
+        $values = [];
+        foreach ($period as $date) {
+            $d = $date->format('Y-m-d');
+            $labels[] = $date->format('d M Y');
+            $values[] = isset($data[$d]) ? $data[$d]->count : 0;
+        }
+
+        return response()->json([
+            'labels' => $labels,
+            'values' => $values,
+        ]);
+    }
+
+    // Download nominatif XLS (Excel-friendly HTML table) — semua kolom tickets
+    public function downloadNominatif(Request $request)
+    {
+        $startDate = $request->input('start_date', now()->subMonth()->format('Y-m-d'));
+        $endDate = $request->input('end_date', now()->format('Y-m-d'));
+
+        $tickets = Ticket::whereBetween('created_at', [$startDate, $endDate])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Ambil semua kolom tabel tickets
+        $columns = Schema::getColumnListing('tickets');
+
+        $filename = 'nominatif_' . $startDate . '_to_' . $endDate . '.xls';
+        $headers = [
+            'Content-Type' => 'application/vnd.ms-excel; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function() use ($tickets, $columns) {
+            // Output HTML table which Excel can open directly
+            echo "<table border='1'><thead><tr>";
+            foreach ($columns as $col) {
+                echo '<th>' . htmlentities($col) . '</th>';
+            }
+            echo "</tr></thead><tbody>";
+
+            foreach ($tickets as $t) {
+                echo "<tr>";
+                foreach ($columns as $col) {
+                    $val = $t->{$col} ?? '';
+                    if (is_array($val) || is_object($val)) $val = json_encode($val);
+                    echo '<td>' . htmlentities((string)$val) . '</td>';
+                }
+                echo "</tr>";
+            }
+
+            echo "</tbody></table>";
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

@@ -64,6 +64,12 @@
     <link rel="stylesheet" href="{{ asset('assets/css/your-theme.css') }}">
     {{-- Tambahkan semua CSS yang dibutuhkan dengan asset() --}}
     {{-- ...existing code... --}}
+
+    <style>
+    .modal {
+      pointer-events: auto !important;
+    }
+  </style>
 </head>
 <body>
     {{-- ...existing code... --}}

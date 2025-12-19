@@ -52,4 +52,9 @@ class User extends Authenticatable
             ->withPivot('status')
             ->withTimestamps();
     }
+    
+    public function notificationsCustom()
+    {
+        return $this->hasMany(Notification::class, 'user_id');
+    }
 }

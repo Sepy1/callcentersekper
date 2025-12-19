@@ -44,6 +44,9 @@
   <link href="../assets/css/nucleo-svg.css" rel="stylesheet" />
   <!-- CSS Files -->
   <link id="pagestyle" href="../assets/css/soft-ui-dashboard.css?v=1.0.3" rel="stylesheet" />
+
+  {{-- CSRF token for AJAX requests --}}
+  <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
 <body class="g-sidenav-show  bg-gray-100 {{ (\Request::is('rtl') ? 'rtl' : (Request::is('virtual-reality') ? 'virtual-reality' : '')) }} ">
@@ -62,6 +65,10 @@
       <p class="m-0">{{ session('success')}}</p>
     </div>
   @endif
+
+  {{-- include floating notification bell partial --}}
+  @include('partials.notification_bell')
+
     <!--   Core JS Files   -->
   <script src="../assets/js/core/popper.min.js"></script>
   <script src="../assets/js/core/bootstrap.min.js"></script>

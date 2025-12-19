@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Models\User;
+use App\Models\Notification;
 
 class Ticket extends Model
 {
@@ -24,5 +28,54 @@ class Ticket extends Model
         return $this->belongsToMany(User::class, 'ticket_officer', 'ticket_id', 'officer_id')
             ->withPivot('status')
             ->withTimestamps();
+    }
+
+    /**
+     * Jika semua officer untuk ticket_id berstatus 'proses_qa',
+     * kirim notifikasi "Tiket Perlu Di Resolved" ke semua QA.
+     */
+    public static function notifyQaIfAllOfficersProsesQa(int $ticketId)
+    {
+        try {
+            $total = DB::table('ticket_officer')->where('ticket_id', $ticketId)->count();
+            if ($total === 0) return;
+
+            $prosesCount = DB::table('ticket_officer')
+                ->where('ticket_id', $ticketId)
+                ->where('status', 'proses_qa')
+                ->count();
+
+            if ($prosesCount !== $total) return;
+
+            $ticket = self::find($ticketId);
+            if (! $ticket) return;
+
+            $title = 'Tiket Perlu Di Resolved';
+            $message = "Tiket {$ticket->nomor_tiket} perlu di-resolved oleh QA.";
+            $link = url('qa/tindak-lanjut') . '?ticket_id=' . $ticket->id . '&nomor_tiket=' . urlencode($ticket->nomor_tiket);
+
+            $qas = User::where('role', 'qa')->get(['id']);
+            foreach ($qas as $qa) {
+                // hindari duplikat notifikasi untuk QA yang sama + ticket
+                $exists = DB::table((new Notification)->getTable())
+                    ->where('user_id', $qa->id)
+                    ->where('title', $title)
+                    ->whereRaw("JSON_EXTRACT(`data`, '$.ticket_id') = ?", [$ticketId])
+                    ->exists();
+
+                if (! $exists) {
+                    Notification::create([
+                        'user_id' => $qa->id,
+                        'title' => $title,
+                        'message' => $message,
+                        'link' => $link,
+                        'is_read' => false,
+                        'data' => ['ticket_id' => $ticketId, 'nomor_tiket' => $ticket->nomor_tiket ?? null, 'reason' => 'all_officers_proses_qa'],
+                    ]);
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::error('notifyQaIfAllOfficersProsesQa error', ['ticket_id' => $ticketId, 'err' => $e->getMessage()]);
+        }
     }
 }

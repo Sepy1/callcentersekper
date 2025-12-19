@@ -20,9 +20,13 @@
     <div class="avatar avatar-sm bg-gradient-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width:40px;height:40px;">
       {{ $initials ?: 'U' }}
     </div>
-    <div class="flex-grow-1">
-      <div class="fw-bold small mb-0 text-capitalize" title="{{ $name }}">{{ \Illuminate\Support\Str::limit($name, 22) }}</div>
-      <a href="{{ url('/logout') }}" class="small text-decoration-none text-danger">Logout</a>
+    <div class="flex-grow-1 d-flex align-items-center justify-content-between">
+      <div>
+        <div class="fw-bold small mb-0 text-capitalize" title="{{ $name }}">{{ \Illuminate\Support\Str::limit($name, 22) }}</div>
+        <a href="{{ url('/logout') }}" class="small text-decoration-none text-danger">Logout</a>
+      </div>
+
+      {{-- notification moved to floating element (top-right) --}}
     </div>
   </div>
   @endauth
@@ -55,6 +59,13 @@
       display: none !important;
       visibility: hidden !important;
       pointer-events: none !important;
+    }
+
+    /* floating notification bell */
+    #floatingNotifBell {
+      top: 16px;
+      right: 16px;
+      z-index: 2050;
     }
   </style>
 
@@ -97,6 +108,14 @@
 
       {{-- ADMIN --}}
       @if(auth()->check() && auth()->user()->role === 'admin')
+      <li class="nav-item">
+        <a class="nav-link {{ (Request::is('admin/dashboard-admin') ? 'active bg-gradient-warning text-white' : '') }}" href="{{ url('admin/dashboard-admin') }}">
+          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+            <i class="fas fa-chart-line text-dark"></i>
+          </div>
+          <span class="nav-link-text ms-1">Dasboard Admin</span>
+        </a>
+      </li>
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('admin/tickets') ? 'active bg-gradient-warning text-white' : '') }}" href="{{ url('admin/tickets') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -355,3 +374,5 @@
     </div>
   </div>
 </aside>
+
+{{-- floating notification bell (moved to partial) --}}

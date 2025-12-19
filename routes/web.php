@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\TicketController;
 use App\Http\Controllers\Officer\TindakLanjutController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,7 +27,10 @@ use App\Http\Controllers\Officer\TindakLanjutController;
 
 
 Route::group(['middleware' => 'auth'], function () {
-		Route::get('/admin/tickets/{id}', [\App\Http\Controllers\Admin\TicketController::class, 'show'])->middleware('auth')->name('admin.tickets.show');
+		Route::get('/admin/tickets/{id}', [\App\Http\Controllers\Admin\TicketController::class, 'show'])
+        ->whereNumber('id')
+        ->middleware('auth')
+        ->name('admin.tickets.show');
 	Route::get('/admin/tickets', [TicketController::class, 'index'])->middleware('auth')->name('admin.tickets');
     Route::post('/admin/tickets', [TicketController::class, 'store'])->middleware('auth');
 
@@ -197,6 +201,28 @@ Route::group(['middleware' => 'auth'], function () {
                         'detail' => "Status: {$oldStatus} -> {$ticket->status}",
                         'ip' => $request->ip(),
                     ]);
+
+                    // jika QA menandai resolved -> notifikasi ke admin: "Tiket Perlu Di Close"
+                    if ($newStatus === 'resolved') {
+                        try {
+                            $title = 'Tiket Perlu Di Close';
+                            $message = "Tiket {$ticket->nomor_tiket} perlu ditutup (close) oleh admin.";
+                            $link = url('admin/tindak-lanjut') . '?ticket_id=' . $ticket->id . '&nomor_tiket=' . urlencode($ticket->nomor_tiket);
+                            $admins = \App\Models\User::where('role', 'admin')->get(['id']);
+                            foreach ($admins as $admin) {
+                                \App\Models\Notification::create([
+                                    'user_id' => $admin->id,
+                                    'title' => $title,
+                                    'message' => $message,
+                                    'link' => $link,
+                                    'is_read' => false,
+                                    'data' => ['ticket_id' => $ticket->id, 'nomor_tiket' => $ticket->nomor_tiket],
+                                ]);
+                            }
+                        } catch (\Throwable $e) {
+                            \Illuminate\Support\Facades\Log::error('notify admins on QA resolved failed', ['ticket_id'=>$ticket->id,'err'=>$e->getMessage()]);
+                        }
+                    }
                 }
             }
 
@@ -214,6 +240,12 @@ Route::group(['middleware' => 'auth'], function () {
     // Admin
     Route::get('/admin/tickets', [TicketController::class, 'index'])->middleware('auth')->name('admin.tickets');
     Route::post('/admin/tickets', [TicketController::class, 'store'])->middleware('auth');
+
+    // Endpoint untuk data grafik jumlah tiket
+    Route::get('/admin/tickets/chart-data', [TicketController::class, 'chartData'])->name('admin.tickets.chart-data');
+
+    // Endpoint untuk download nominatif (CSV) berdasarkan filter tanggal
+    Route::get('/admin/tickets/download-nominatif', [TicketController::class, 'downloadNominatif'])->name('admin.tickets.download-nominatif');
 
     // QA: Daftar Tiket (lihat semua tiket)
     Route::get('/qa/tickets', function(Request $request) {
@@ -277,4 +309,21 @@ Route::group(['middleware' => 'auth'], function () {
     // Chat API (server-side)
     Route::get('/chat/messages/{nomor_tiket}', [ChatController::class, 'messages'])->name('chat.messages');
     Route::post('/chat/messages', [ChatController::class, 'send'])->name('chat.send');
+
+    // Route untuk Dashboard Admin
+	Route::get('/admin/dashboard-admin', function () {
+		return view('admin.dashboard-admin');
+	})->middleware('auth')->name('admin.dashboard.admin');
+});
+
+// mark-as-read and redirect notification (only for authenticated users)
+Route::middleware(['web','auth'])->group(function () {
+	Route::get('/notifications/open/{id}', [NotificationController::class, 'open'])->name('notifications.open');
+
+	// mark-read endpoint (AJAX / fetch)
+	Route::post('/notifications/mark-read/{id}', [NotificationController::class, 'markRead'])->name('notifications.mark_read');
+
+	// debug / check endpoints to inspect notification rows and unread count
+	Route::get('/notifications/debug/{id}', [NotificationController::class, 'debug'])->name('notifications.debug');
+	Route::get('/notifications/count', [NotificationController::class, 'count'])->name('notifications.count');
 });

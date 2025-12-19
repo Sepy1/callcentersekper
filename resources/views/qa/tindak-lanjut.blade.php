@@ -453,18 +453,4 @@ document.addEventListener('DOMContentLoaded', function(){
     setTimeout(fitContainer, 300);
 })();
 </script>
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-	const username = {!! json_encode(auth()->user()->name ?? '') !!};
-	if (!username) return;
-	const sidebar = document.querySelector('#sidenav-main') || document.querySelector('.sidenav') || document.querySelector('.navbar-vertical') || document.querySelector('.sidebar');
-	if (!sidebar || sidebar.querySelector('.sidebar-user')) return;
-	const initials = username.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
-	const header = document.createElement('div');
-	header.className = 'sidebar-user px-3 py-2 border-bottom';
-	header.innerHTML = '<div class="d-flex align-items-center"><div class="avatar avatar-sm bg-gradient-primary text-white rounded-circle me-2">'+initials+'</div><div><div class="fw-bold small">'+username+'</div><a href="/logout" class="small text-decoration-none">Logout</a></div></div>';
-	const ref = sidebar.querySelector('.nav') || sidebar.querySelector('ul') || sidebar.firstChild;
-	sidebar.insertBefore(header, ref);
-});
-</script>
 @endsection
