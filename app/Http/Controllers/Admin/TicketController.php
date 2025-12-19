@@ -448,4 +448,57 @@ class TicketController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
+
+    // Generate PDF report (monthly / custom range)
+    public function generatePdf(Request $request)
+    {
+        // Accept start_date/end_date from query; if missing or empty, default to last 30 days
+        $reqStart = $request->input('start_date');
+        $reqEnd = $request->input('end_date');
+
+        $startDate = $reqStart && trim($reqStart) !== '' ? $reqStart : now()->subDays(30)->format('Y-m-d');
+        $endDate = $reqEnd && trim($reqEnd) !== '' ? $reqEnd : now()->format('Y-m-d');
+
+        $tickets = Ticket::with('officers')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        // Rekapitulasi
+        $jumlahDiterima = $tickets->count();
+        $jumlahSelesai = $tickets->where('status', 'closed')->count() + $tickets->where('status', 'resolved')->count();
+        $jumlahProses = $tickets->whereIn('status', ['open', 'in_progress'])->count();
+
+        // Rata-rata waktu penyelesaian (jam) untuk tiket yang selesai
+        $durations = $tickets->filter(function($t){
+            return $t->created_at && $t->closing_at;
+        })->map(function($t){
+            return max(0, $t->closing_at->diffInHours($t->created_at));
+        });
+        $avgHours = $durations->count() ? round($durations->average(), 2) : 0;
+
+        $data = [
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'tickets' => $tickets,
+            'jumlahDiterima' => $jumlahDiterima,
+            'jumlahSelesai' => $jumlahSelesai,
+            'jumlahProses' => $jumlahProses,
+            'avgHours' => $avgHours,
+        ];
+
+        // If barryvdh/laravel-dompdf is installed, use it. Otherwise return HTML view for manual printing.
+        if (class_exists('\Barryvdh\DomPDF\Facade\Pdf') || class_exists('\Barryvdh\DomPDF\PDF')) {
+            try {
+                $pdf = \PDF::loadView('admin.reports.monthly', $data)->setPaper('a4', 'portrait');
+                $filename = 'laporan_tiket_' . $startDate . '_to_' . $endDate . '.pdf';
+                return $pdf->download($filename);
+            } catch (\Exception $e) {
+                return response()->view('admin.reports.monthly', $data);
+            }
+        }
+
+        // Fallback: render HTML view (user can print to PDF from browser)
+        return view('admin.reports.monthly', $data);
+    }
 }

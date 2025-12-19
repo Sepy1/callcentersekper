@@ -208,7 +208,7 @@
           <h6 class="text-uppercase font-weight-bold mb-2">CGenerate Laporan</h6>
           <div class="d-flex gap-2 mb-2">
             <button id="download-nominatif" class="btn btn-sm btn-success">Download Nominatif</button>
-            <button id="generate-pdf" class="btn btn-sm btn-secondary" disabled>Generate Laporan Bulanan (PDF)</button>
+            <button id="generate-pdf" class="btn btn-sm btn-secondary">Generate Laporan Bulanan (PDF)</button>
           </div>
           <p class="mb-0 text-muted small">Gunakan "Download Nominatif" untuk mengunduh data tiket sesuai filter tanggal chart (format CSV/Excel). PDF generation disediakan nanti.</p>
         </div>
@@ -309,7 +309,11 @@
     var pdfBtn = document.getElementById('generate-pdf');
     if (pdfBtn) {
       pdfBtn.addEventListener('click', function () {
-        alert('PDF generation not implemented yet.');
+        const startDate = document.getElementById('start_date').value || '';
+        const endDate = document.getElementById('end_date').value || '';
+        var url = baseUrl + '/admin/tickets/generate-pdf?start_date=' + encodeURIComponent(startDate) + '&end_date=' + encodeURIComponent(endDate);
+        // open in new tab/window so browser PDF preview works
+        window.open(url, '_blank');
       });
     }
 

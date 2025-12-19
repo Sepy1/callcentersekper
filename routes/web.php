@@ -246,6 +246,8 @@ Route::group(['middleware' => 'auth'], function () {
 
     // Endpoint untuk download nominatif (CSV) berdasarkan filter tanggal
     Route::get('/admin/tickets/download-nominatif', [TicketController::class, 'downloadNominatif'])->name('admin.tickets.download-nominatif');
+        // PDF report (monthly) - accepts start_date and end_date as query params
+        Route::get('/admin/tickets/generate-pdf', [TicketController::class, 'generatePdf'])->name('admin.tickets.generate-pdf');
 
     // QA: Daftar Tiket (lihat semua tiket)
     Route::get('/qa/tickets', function(Request $request) {
