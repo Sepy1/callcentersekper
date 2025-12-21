@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Ticket;
 use App\Models\User;
+use App\Models\Notification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification as NotificationFacade;
 use App\Notifications\TicketCreatedNotification;
@@ -158,6 +159,27 @@ class TicketApiController extends Controller
                 $ticket->touch();
             } catch (\Throwable $e) {
                 \Log::warning('touch ticket after commit failed: ' . $e->getMessage());
+            }
+
+            // create DB notifications for admins about the new ticket
+            try {
+                $admins = User::where('role', 'admin')->get();
+                // link directly to tindak-lanjut page so the ticket opens by id
+                $link = url('qa/tindak-lanjut') . '?ticket_id=' . $ticket->id;
+                $title = 'Tiket Baru: ' . ($ticket->nomor_tiket ?? '');
+                $message = "Tiket baru dibuat oleh {$ticket->nama_pelapor} (" . ($ticket->email ?? '-') . ")";
+                foreach ($admins as $adm) {
+                    Notification::create([
+                        'user_id' => $adm->id,
+                        'title' => $title,
+                        'message' => $message,
+                        'link' => $link,
+                        'is_read' => false,
+                        'data' => ['ticket_id' => $ticket->id, 'nomor_tiket' => $ticket->nomor_tiket]
+                    ]);
+                }
+            } catch (\Throwable $e) {
+                \Log::error('create admin notifications failed: ' . $e->getMessage());
             }
 
             // notify admins/qa and pelapor via email
