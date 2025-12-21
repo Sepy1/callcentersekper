@@ -152,6 +152,14 @@ class TicketApiController extends Controller
 
             DB::commit();
 
+            // ensure updated_at reflects final post-processing time (files/pivot attached)
+            try {
+                $ticket->refresh();
+                $ticket->touch();
+            } catch (\Throwable $e) {
+                \Log::warning('touch ticket after commit failed: ' . $e->getMessage());
+            }
+
             // notify admins/qa and pelapor via email
             try {
                 $users = User::whereIn('role', ['admin','qa'])->get();
