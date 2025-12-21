@@ -41,11 +41,18 @@ class TicketApiController extends Controller
             'email' => 'required|email|max:255',
             'kategori' => 'required|string|max:255',
             'tipe_pelapor' => 'nullable|string|max:255',
-            'officer' => 'nullable|string|max:255',
-            'status' => 'required|string|in:open,in_progress,closed',
+            'status' => 'nullable|string|in:open,in_progress,closed',
             'judul' => 'required|string|max:255',
             'detail' => 'required|string',
-            'officer_ids' => 'nullable|string',
+            'nama_ibu' => 'nullable|string|max:255',
+            'alamat' => 'nullable|string',
+            'tempat_lahir' => 'nullable|string|max:255',
+            'tgl_lahir' => 'nullable|date',
+            'kode_kantor' => 'nullable|string|max:100',
+            'upload_ktp' => 'nullable|file',
+            'upload_bukti' => 'nullable|file',
+            'media_closing' => 'nullable|file',
+            'closing_at' => 'nullable|date',
         ];
 
         if ($request->input('tipe_pelapor') === 'Nasabah') {
@@ -53,6 +60,7 @@ class TicketApiController extends Controller
                 'id_ktp' => 'required|string|max:100',
                 'nomor_rekening' => 'required|string|max:100',
                 'hp' => 'required|string|max:20',
+                'is_nasabah' => 'nullable|boolean',
             ]);
         }
 
@@ -60,6 +68,8 @@ class TicketApiController extends Controller
 
         DB::beginTransaction();
         try {
+            $ids = [];
+
             $date = now()->format('Ymd');
             $random = strtoupper(substr(bin2hex(random_bytes(3)), 0, 5));
             $nomor_tiket = 'JTG-' . $date . '-' . $random;
@@ -70,20 +80,53 @@ class TicketApiController extends Controller
             $ticket->email = $validated['email'];
             $ticket->kategori = $validated['kategori'];
             $ticket->tipe_pelapor = $validated['tipe_pelapor'] ?? null;
+            $ticket->judul = $validated['judul'];
+            $ticket->detail = $validated['detail'];
+            $ticket->status = $validated['status'] ?? 'open';
 
+            // nasabah fields
             if ($ticket->tipe_pelapor === 'Nasabah') {
-                $ticket->id_ktp = $validated['id_ktp'];
-                $ticket->nomor_rekening = $validated['nomor_rekening'];
-                $ticket->hp = $validated['hp'];
+                $ticket->is_nasabah = true;
+                $ticket->id_ktp = $validated['id_ktp'] ?? null;
+                $ticket->nomor_rekening = $validated['nomor_rekening'] ?? null;
+                $ticket->hp = $validated['hp'] ?? null;
             } else {
+                $ticket->is_nasabah = false;
                 if ($request->filled('hp')) $ticket->hp = $request->input('hp');
             }
 
-            $ticket->officer = $request->input('officer') ?? null;
-            $ticket->status = $validated['status'];
-            $ticket->judul = $validated['judul'];
-            $ticket->detail = $validated['detail'];
+            // other optional fields
+            $ticket->nama_ibu = $validated['nama_ibu'] ?? null;
+            $ticket->alamat = $validated['alamat'] ?? null;
+            $ticket->tempat_lahir = $validated['tempat_lahir'] ?? null;
+            $ticket->tgl_lahir = $validated['tgl_lahir'] ?? null;
+            $ticket->kode_kantor = $validated['kode_kantor'] ?? null;
+
+            if (!empty($validated['closing_at'])) {
+                $ticket->closing_at = $validated['closing_at'];
+            }
+
             $ticket->save();
+
+            // store uploaded files if provided
+            if ($request->hasFile('upload_ktp')) {
+                try {
+                    $path = $request->file('upload_ktp')->store('tickets', 'public');
+                    $ticket->upload_ktp = $path;
+                } catch (\Throwable $e) { \Log::error('upload_ktp store failed: ' . $e->getMessage()); }
+            }
+            if ($request->hasFile('upload_bukti')) {
+                try {
+                    $path = $request->file('upload_bukti')->store('tickets', 'public');
+                    $ticket->upload_bukti = $path;
+                } catch (\Throwable $e) { \Log::error('upload_bukti store failed: ' . $e->getMessage()); }
+            }
+            if ($request->hasFile('media_closing')) {
+                try {
+                    $path = $request->file('media_closing')->store('tickets', 'public');
+                    $ticket->media_closing = $path;
+                } catch (\Throwable $e) { \Log::error('media_closing store failed: ' . $e->getMessage()); }
+            }
 
             // handle officer_ids pivot (comma separated)
             if ($request->filled('officer_ids')) {
@@ -102,9 +145,10 @@ class TicketApiController extends Controller
                     // update human-readable officer names
                     $names = User::whereIn('id', $ids)->pluck('name')->toArray();
                     $ticket->officer = implode(', ', $names);
-                    $ticket->save();
                 }
             }
+
+            $ticket->save();
 
             DB::commit();
 
@@ -129,10 +173,17 @@ class TicketApiController extends Controller
                     }
                 }
             } catch (\Throwable $e) { \Log::error('send ticket assigned email (api) failed: ' . $e->getMessage()); }
+
             return response()->json(['success' => true, 'ticket' => $ticket->fresh()->load('officers')], 201);
         } catch (\Throwable $e) {
             DB::rollBack();
-            return response()->json(['success' => false, 'message' => 'Failed to create ticket'], 500);
+            \Log::error('create ticket (api) failed: ' . $e->getMessage(), ['exception' => $e]);
+            // Return exception message for debugging in local environment
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create ticket',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 }

@@ -346,4 +346,25 @@
     }
   })();
 </script>
+<script>
+  // Script untuk menampilkan waktu dan tanggal di Dashboard QA
+  document.addEventListener('DOMContentLoaded', function () {
+    function updateTime() {
+      const now = new Date();
+      const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+
+      const time = now.toLocaleTimeString('id-ID', optionsTime);
+      const date = now.toLocaleDateString('id-ID', optionsDate);
+
+      const tEl = document.getElementById('current-time');
+      const dEl = document.getElementById('current-date');
+      if (tEl) tEl.textContent = time;
+      if (dEl) dEl.textContent = date;
+    }
+
+    updateTime();
+    setInterval(updateTime, 1000);
+  });
+</script>
 @endsection
