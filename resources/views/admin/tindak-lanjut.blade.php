@@ -411,7 +411,13 @@
 </div>
 
 @if(!empty($ticket))
-(function(){})();
+    <!-- Removed stray literal -->
+    <!-- Modal: Ticket History -->
+    @php
+        $history = \App\Models\ActivityLog::where('ticket_id', $ticket->id)
+            ->orderBy('created_at')
+            ->get();
+    @endphp
 <!-- Modal: Ticket History -->
 @php
     $history = \App\Models\ActivityLog::where('ticket_id', $ticket->id)
