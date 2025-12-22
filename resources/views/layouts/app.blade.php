@@ -51,18 +51,10 @@
     html.page-transition { opacity: 0; transition: opacity 320ms ease-in-out; }
     html.page-transition.is-visible { opacity: 1; }
     body { -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
-    /* Page navigation spinner */
-    #page-spinner { display: none; position: fixed; inset: 0; align-items: center; justify-content: center; background: rgba(255,255,255,0.65); z-index: 3000; }
-    #page-spinner.visible { display: flex; }
-    #page-spinner .spinner-border { width: 3rem; height: 3rem; }
   </style>
 </head>
 
 <body class="g-sidenav-show  bg-gray-100 {{ (\Request::is('rtl') ? 'rtl' : (Request::is('virtual-reality') ? 'virtual-reality' : '')) }} ">
-  <!-- Full-page spinner shown during client-side navigation/form submit -->
-  <div id="page-spinner" aria-hidden="true">
-    <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
-  </div>
   @auth
     @yield('auth')
   @endauth
@@ -110,7 +102,6 @@
   <script>
     (function(){
       var duration = 320;
-      var spinner = null;
       function isLocalLink(a){
         if(!a) return false;
         var href = a.getAttribute('href') || '';
@@ -119,25 +110,38 @@
         if(a.target && a.target === '_blank') return false;
         try { var url = new URL(href, location.href); return url.origin === location.origin; } catch(e){ return false; }
       }
+
+      function showPage(){ document.documentElement.classList.add('is-visible'); }
+      function hidePage(){ document.documentElement.classList.remove('is-visible'); }
+
+      // DOMContentLoaded covers normal navigations
       document.addEventListener('DOMContentLoaded', function(){
-        // show page
-        document.documentElement.classList.add('is-visible');
-        spinner = document.getElementById('page-spinner');
-        if(spinner) spinner.classList.remove('visible');
-        // intercept same-origin link clicks to fade out before navigating
-        document.body.addEventListener('click', function(e){
-          var a = e.target.closest('a');
-          if(!a) return;
-          if(!isLocalLink(a)) return;
-          e.preventDefault();
-          // show spinner then fade
-          if(spinner) spinner.classList.add('visible');
-          document.documentElement.classList.remove('is-visible');
-          setTimeout(function(){ window.location.href = new URL(a.getAttribute('href'), location.href).href; }, duration);
-        }, true);
-        // fade on form submit
-        document.body.addEventListener('submit', function(e){ if(spinner) spinner.classList.add('visible'); document.documentElement.classList.remove('is-visible'); }, true);
+        showPage();
       }, false);
+
+      // pageshow covers back/forward cache restores (bfcache)
+      window.addEventListener('pageshow', function(e){
+        // when navigating via back/forward, some browsers restore page from cache without firing DOMContentLoaded
+        // ensure visibility is restored
+        showPage();
+        if (e && e.persisted) {
+          // force a reflow to ensure transitions apply
+          void document.documentElement.offsetWidth;
+        }
+      }, false);
+
+      // intercept same-origin link clicks to fade out before navigating
+      document.body.addEventListener('click', function(e){
+        var a = e.target.closest('a');
+        if(!a) return;
+        if(!isLocalLink(a)) return;
+        e.preventDefault();
+        hidePage();
+        setTimeout(function(){ window.location.href = new URL(a.getAttribute('href'), location.href).href; }, duration);
+      }, true);
+
+      // fade on form submit
+      document.body.addEventListener('submit', function(){ hidePage(); }, true);
     })();
   </script>
 </body>
