@@ -144,7 +144,7 @@
                                                    name="email"
                                                    id="email"
                                                    placeholder="Email"
-                                                   value="admin@softui.com">
+                                                   value="">
                                             @error('email')
                                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                             @enderror
@@ -157,7 +157,7 @@
                                                    name="password"
                                                    id="password"
                                                    placeholder="Password"
-                                                   value="secret">
+                                                   value="">
                                             @error('password')
                                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                             @enderror
