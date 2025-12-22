@@ -39,13 +39,13 @@ Route::group(['middleware' => 'auth'], function () {
     // (removed) home route handled globally below to redirect guests to login
 	Route::get('dashboard', function () {
 		$role = auth()->user()->role;
-		if ($role === 'admin') {
-			return redirect('/admin/dashboard');
-		} elseif ($role === 'officer') {
-			return redirect('/officer/dashboard');
-		} elseif ($role === 'qa') {
-			return redirect('/qa/dashboard');
-		}
+        if ($role === 'admin') {
+            return redirect('/admin/dashboard-admin');
+        } elseif ($role === 'officer') {
+            return redirect('/officer/dashboard-officer');
+        } elseif ($role === 'qa') {
+            return redirect('/qa/dashboard-qa');
+        }
 		return view('dashboard');
 	})->name('dashboard');
 
@@ -83,11 +83,11 @@ Route::get('/', function () {
     if (auth()->check()) {
         $role = auth()->user()->role;
         if ($role === 'admin') {
-            return redirect('/admin/dashboard');
+            return redirect('/admin/dashboard-admin');
         } elseif ($role === 'officer') {
-            return redirect('/officer/dashboard');
+            return redirect('/officer/dashboard-officer');
         } elseif ($role === 'qa') {
-            return redirect('/qa/dashboard');
+            return redirect('/qa/dashboard-qa');
         }
         return view('dashboard');
     }
