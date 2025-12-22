@@ -38,6 +38,24 @@
                             <h6 class="text-white mb-0">{{ $ticket->email }}</h6>
                         </div>
 
+                        {{-- CIF (nasabah_id) --}}
+                        @php $cifs = $ticket->cifs ?? []; @endphp
+                        @if(!empty($cifs))
+                        <div>
+                            <p class="text-white text-sm opacity-8 mb-0">CIF</p>
+                            @php $first = array_slice($cifs,0,3); $remaining = count($cifs) - count($first); @endphp
+                            <h6 class="text-white mb-0">
+                                {{ implode(', ', $first) }}
+                                    @if($remaining > 0)
+                                    <a href="#" class="ms-2 small show-more-cif text-white" data-ticket-id="{{ $ticket->id }}" data-remaining="{{ $remaining }}">+{{ $remaining }} more</a>
+                                @endif
+                            </h6>
+                            @if($remaining > 0)
+                                <div class="all-cifs d-none mt-1 small text-white-50">{{ implode(', ', $cifs) }}</div>
+                            @endif
+                        </div>
+                        @endif
+
                         {{-- HP + ICON WHATSAPP (SVG) --}}
                         <div>
                             <p class="text-white text-sm opacity-8 mb-0">No. HP</p>

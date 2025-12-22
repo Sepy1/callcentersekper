@@ -7,13 +7,9 @@
 
     <div class="col-md-6">
         <label class="form-label text-xs fw-bold">Status</label><br>
-        @if($ticket->status == 'open')
-            <span class="badge bg-gradient-success">Open</span>
-        @elseif($ticket->status == 'in_progress')
-            <span class="badge bg-gradient-warning">In Progress</span>
-        @elseif($ticket->status == 'closed')
-            <span class="badge bg-gradient-secondary">Closed</span>
-        @endif
+        <span class="badge bg-gradient-{{ $ticket->status == 'open' ? 'success' : ($ticket->status == 'in_progress' ? 'warning' : 'secondary') }}">
+            {{ strtoupper(str_replace('_',' ', $ticket->status)) }}
+        </span>
     </div>
 
     <div class="col-md-6">
@@ -21,26 +17,40 @@
         <div class="form-control bg-light">{{ $ticket->nama_pelapor }}</div>
     </div>
 
+    @if(!empty($ticket->id_ktp))
+    @php
+        $cifs = \App\Models\Nasabah::where('no_ktp', $ticket->id_ktp)->pluck('cif')->toArray();
+        $cifCount = count($cifs);
+        $visible = array_slice($cifs, 0, 3);
+        $hidden = array_slice($cifs, 3);
+    @endphp
+    <div class="col-md-6">
+        <label class="form-label text-xs fw-bold">CIF (dari No. KTP)</label>
+        <div class="form-control bg-light">
+            @if($cifCount === 0)
+                -
+            @else
+                <div class="cif-list">
+                    @foreach($visible as $c)
+                        <span class="badge bg-info text-dark me-1">{{ $c }}</span>
+                    @endforeach
+                    @if(count($hidden) > 0)
+                        <span id="more-cifs" class="d-none">
+                            @foreach($hidden as $c)
+                                <span class="badge bg-info text-dark me-1">{{ $c }}</span>
+                            @endforeach
+                        </span>
+                        <button type="button" id="btn-show-more-cifs" class="btn btn-sm btn-link">+{{ count($hidden) }} more</button>
+                    @endif
+                </div>
+            @endif
+        </div>
+    </div>
+    @endif
+
     <div class="col-md-6">
         <label class="form-label text-xs fw-bold">Email</label>
         <div class="form-control bg-light">{{ $ticket->email }}</div>
-    </div>
-
-    <div class="col-md-6">
-        <label class="form-label text-xs fw-bold">Kategori</label>
-        <div class="form-control bg-light">{{ $ticket->kategori }}</div>
-    </div>
-
-    <div class="col-md-6">
-        <label class="form-label text-xs fw-bold">Officer</label>
-        <div class="form-control bg-light">{{ $ticket->officer ?? '-' }}</div>
-    </div>
-
-    <div class="col-md-6">
-        <label class="form-label text-xs fw-bold">Tanggal Dibuat</label>
-        <div class="form-control bg-light">
-            {{ \Carbon\Carbon::parse($ticket->created_at)->format('d M Y H:i') }}
-        </div>
     </div>
 
     <div class="col-12">
@@ -56,3 +66,18 @@
     </div>
 
 </div>
+
+@push('dashboard')
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    var btn = document.getElementById('btn-show-more-cifs');
+    if(!btn) return;
+    btn.addEventListener('click', function(){
+        var more = document.getElementById('more-cifs');
+        if(!more) return;
+        more.classList.remove('d-none');
+        btn.style.display = 'none';
+    });
+});
+</script>
+@endpush

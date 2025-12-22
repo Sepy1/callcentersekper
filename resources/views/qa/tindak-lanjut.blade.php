@@ -84,6 +84,31 @@
                                                 <h6 class="mb-2">Informasi Pelapor</h6>
                                                 <div class="mt-2"><strong>Nama:</strong> {{ $ticket->nama_pelapor ?? '-' }}</div>
                                                 <div class="mt-1"><strong>ID KTP:</strong> {{ $ticket->id_ktp ?? '-' }}</div>
+                                                @if(!empty($ticket->id_ktp))
+                                                    @php
+                                                        $cifs = \App\Models\Nasabah::where('no_ktp', $ticket->id_ktp)->pluck('cif')->toArray();
+                                                        $cifCount = count($cifs);
+                                                        $visibleCifs = array_slice($cifs, 0, 3);
+                                                        $hiddenCifs = array_slice($cifs, 3);
+                                                    @endphp
+                                                    <div class="mt-1"><strong>CIF:</strong>
+                                                        @if($cifCount === 0)
+                                                            -
+                                                        @else
+                                                            @foreach($visibleCifs as $c)
+                                                                <span class="badge bg-info text-dark me-1">{{ $c }}</span>
+                                                            @endforeach
+                                                            @if(count($hiddenCifs) > 0)
+                                                                <span id="qa-more-cifs" class="d-none">
+                                                                    @foreach($hiddenCifs as $c)
+                                                                        <span class="badge bg-info text-dark me-1">{{ $c }}</span>
+                                                                    @endforeach
+                                                                </span>
+                                                                <button type="button" id="qa-btn-show-more-cifs" class="btn btn-sm btn-link">+{{ count($hiddenCifs) }} more</button>
+                                                            @endif
+                                                        @endif
+                                                    </div>
+                                                @endif
                                                 <div class="mt-1"><strong>No. Rekening:</strong> {{ $ticket->nomor_rekening ?? '-' }}</div>
                                                 <div class="mt-1"><strong>Nama Ibu:</strong> {{ $ticket->nama_ibu ?? '-' }}</div>
                                                 <div class="mt-1"><strong>Alamat:</strong> {{ $ticket->alamat ?? '-' }}</div>
@@ -257,6 +282,20 @@
             </div>
          </div>
     </div>
+@push('dashboard')
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    var btn = document.getElementById('qa-btn-show-more-cifs');
+    if(!btn) return;
+    btn.addEventListener('click', function(){
+        var more = document.getElementById('qa-more-cifs');
+        if(!more) return;
+        more.classList.remove('d-none');
+        btn.style.display = 'none';
+    });
+});
+</script>
+@endpush
 </div>
 
 @if(session('success'))

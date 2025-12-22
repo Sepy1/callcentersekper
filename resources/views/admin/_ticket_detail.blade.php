@@ -39,6 +39,20 @@
     <dd class="col-sm-8">{{ $ticket->is_nasabah ? 'Ya' : 'Tidak' }}</dd>
     <dt class="col-sm-4">ID KTP</dt>
     <dd class="col-sm-8">{{ $ticket->id_ktp }}</dd>
+    <dt class="col-sm-4">CIF</dt>
+    <dd class="col-sm-8">
+        @php $cifs = $ticket->cifs ?? []; @endphp
+        @if(!empty($cifs))
+            @php $first = array_slice($cifs, 0, 3); $remaining = count($cifs) - count($first); @endphp
+            {{ implode(', ', $first) }}
+                @if($remaining > 0)
+                <a href="#" class="ms-2 small show-more-cif" data-ticket-id="{{ $ticket->id }}" data-remaining="{{ $remaining }}">+{{ $remaining }} more</a>
+                <div class="all-cifs d-none mt-1 small text-muted">{{ implode(', ', $cifs) }}</div>
+            @endif
+        @else
+            -
+        @endif
+    </dd>
     <dt class="col-sm-4">Nomor Rekening</dt>
     <dd class="col-sm-8">{{ $ticket->nomor_rekening }}</dd>
     <dt class="col-sm-4">Nama Ibu</dt>

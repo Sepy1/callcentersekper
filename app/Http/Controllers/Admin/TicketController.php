@@ -20,6 +20,16 @@ class TicketController extends Controller
     public function show(Request $request, $id)
     {
         $ticket = Ticket::findOrFail($id);
+        // attach CIF list for view (if id_ktp matches nasabahs)
+        try {
+            $ticket->cifs = [];
+            if (!empty($ticket->id_ktp)) {
+                $ticket->cifs = \App\Models\Nasabah::where('no_ktp', $ticket->id_ktp)->pluck('cif')->toArray();
+            }
+        } catch (\Throwable $e) {
+            \Log::warning('attach cifs failed: ' . $e->getMessage());
+            $ticket->cifs = [];
+        }
         return view('admin.tickets.show', compact('ticket'));
     }
 
@@ -233,6 +243,19 @@ class TicketController extends Controller
             $ticket = Ticket::find($ticketId);
         }
 
+        // attach CIF list for view
+        try {
+            if ($ticket) {
+                $ticket->cifs = [];
+                if (!empty($ticket->id_ktp)) {
+                    $ticket->cifs = \App\Models\Nasabah::where('no_ktp', $ticket->id_ktp)->pluck('cif')->toArray();
+                }
+            }
+        } catch (\Throwable $e) {
+            \Log::warning('attach cifs failed: ' . $e->getMessage());
+            if ($ticket) $ticket->cifs = [];
+        }
+
         return view('admin.tindak-lanjut', compact('ticket', 'officers'));
     }
 
@@ -306,6 +329,17 @@ class TicketController extends Controller
             if ($request->hasFile('upload_bukti')) {
                 $ticket->upload_bukti = $request->file('upload_bukti')->store('tickets', 'public');
             }
+        }
+        // validate KTP against nasabahs table and mark as nasabah if matches
+        try {
+            if (!empty($ticket->id_ktp)) {
+                $matches = \App\Models\Nasabah::where('no_ktp', $ticket->id_ktp)->pluck('cif')->toArray();
+                if (!empty($matches)) {
+                    $ticket->is_nasabah = true;
+                }
+            }
+        } catch (\Throwable $e) {
+            \Log::warning('nasabah lookup failed: ' . $e->getMessage());
         }
         $ticket->officer = implode(', ', $officerNames);
         $ticket->status = $request->input('status');

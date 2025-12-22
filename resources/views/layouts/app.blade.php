@@ -29,8 +29,12 @@
       <x-demo-metas></x-demo-metas>
   @endif
 
-  <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
-  <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+  
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/logo-ct.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/logo-ct.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/logo-ct.png">
+  <link rel="shortcut icon" href="/assets/img/logo-ct.png">
+  <link rel="icon" href="/favicon.ico">
   <title>
     Call Center PT BPR BKK Jateng
   </title>
