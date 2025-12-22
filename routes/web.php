@@ -61,37 +61,14 @@ Route::group(['middleware' => 'auth'], function () {
 		return view('qa.dashboard');
 	})->middleware('auth')->name('qa.dashboard');
 
-	Route::get('billing', function () {
-		return view('billing');
-	})->name('billing');
+	
 
 	Route::get('profile', function () {
 		return view('profile');
 	})->name('profile');
 
-	Route::get('rtl', function () {
-		return view('rtl');
-	})->name('rtl');
 
-	Route::get('user-management', function () {
-		return view('laravel-examples/user-management');
-	})->name('user-management');
 
-	Route::get('tables', function () {
-		return view('tables');
-	})->name('tables');
-
-    Route::get('virtual-reality', function () {
-		return view('virtual-reality');
-	})->name('virtual-reality');
-
-    Route::get('static-sign-in', function () {
-		return view('static-sign-in');
-	})->name('sign-in');
-
-    Route::get('static-sign-up', function () {
-		return view('static-sign-up');
-	})->name('sign-up');
 
     Route::get('/logout', [SessionsController::class, 'destroy']);
 	Route::get('/user-profile', [InfoUserController::class, 'create']);
