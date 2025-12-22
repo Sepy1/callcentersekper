@@ -163,7 +163,7 @@ class TicketApiController extends Controller
 
             // create DB notifications for admins about the new ticket
             try {
-                $admins = User::where('role', 'admin')->get();
+                $admins = User::whereIn('role', ['admin', 'qa'])->get();
                 // link directly to tindak-lanjut page so the ticket opens by id
                 $link = url('qa/tindak-lanjut') . '?ticket_id=' . $ticket->id;
                 $title = 'Tiket Baru: ' . ($ticket->nomor_tiket ?? '');
