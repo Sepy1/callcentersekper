@@ -1,16 +1,15 @@
 @component('mail::message')
-# Tiket Ditutup: {{ $ticket->nomor_tiket }}
+# Status Tiket: {{ $ticket->nomor_tiket }}
 
 Halo {{ $notifiable->name ?? '' }},
 
-Tiket Anda telah ditutup.
+Berikut adalah status terbaru untuk tiket Anda.
 
 - **Nomor:** {{ $ticket->nomor_tiket }}
 - **Judul:** {{ $ticket->judul ?? '-' }}
-- **Tindak Lanjut:** {{ $ticket->closing_notes ?? '-' }}
+- **Status saat ini:** {{ $ticket->status }}
 
-Terima kasih telah menggunakan layanan kami.
 
-Salam,
+Terima kasih,
 {{ config('app.name') }}
 @endcomponent

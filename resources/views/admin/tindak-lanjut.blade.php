@@ -817,47 +817,78 @@ document.addEventListener('DOMContentLoaded', function(){
 @if(!empty($ticket))
 <script>
 document.addEventListener('DOMContentLoaded', function(){
-	const statusForm = document.getElementById('admin-status-form');
-	const statusSelect = document.getElementById('admin-status-select');
-	const modalEl = document.getElementById('closingModal');
-	const modal = modalEl ? new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false }) : null;
-	const modalSave = document.getElementById('modal-save-closing');
+    const statusForm = document.getElementById('admin-status-form');
+    const statusSelect = document.getElementById('admin-status-select');
+    const modalEl = document.getElementById('closingModal');
+    const modal = modalEl ? new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false }) : null;
+    const modalSave = document.getElementById('modal-save-closing');
+    const statusSubmitBtn = document.getElementById('admin-status-submit');
 
-	if (!statusForm) return;
+    // flag to bypass modal when submitting programmatically from the modal
+    let bypassModal = false;
 
-	statusForm.addEventListener('submit', function(ev){
-		const val = statusSelect.value;
-		// if closing, open modal to collect closing info
-		if (val === 'closed') {
-			ev.preventDefault();
-			if (modal) modal.show();
-		}
-		// otherwise allow normal submit
-	});
+    if (!statusForm) return;
 
-	if (modalSave) {
-		modalSave.addEventListener('click', function(){
-			// read modal inputs
-			const tindak = document.getElementById('modal-tindak').value || '';
-			const media = document.getElementById('modal-media').value || '';
-			// set hidden inputs
-			document.getElementById('tindak_lanjut_closing').value = tindak;
-			document.getElementById('media_closing').value = media;
-			// closing_at formatted for MySQL DATETIME: YYYY-MM-DD HH:MM:SS
-			const dt = new Date();
-			const yyyy = dt.getFullYear();
-			const mm = String(dt.getMonth()+1).padStart(2,'0');
-			const dd = String(dt.getDate()).padStart(2,'0');
-			const hh = String(dt.getHours()).padStart(2,'0');
-			const mi = String(dt.getMinutes()).padStart(2,'0');
-			const ss = String(dt.getSeconds()).padStart(2,'0');
-			const formatted = `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
-			document.getElementById('closing_at').value = formatted;
-			// hide modal then submit form
-			if (modal) modal.hide();
-			statusForm.submit();
-		});
-	}
+    statusForm.addEventListener('submit', function(ev){
+        if (bypassModal) {
+            // allow programmatic submit to go through once
+            bypassModal = false;
+            return;
+        }
+
+        const val = statusSelect ? statusSelect.value : null;
+        // if closing, open modal to collect closing info
+        if (val === 'closed') {
+            ev.preventDefault();
+            if (modal) modal.show();
+        }
+        // otherwise allow normal submit
+    });
+
+    // also intercept click on submit button to prevent race conditions
+    if (statusSubmitBtn) {
+        statusSubmitBtn.addEventListener('click', function(ev){
+            const val = statusSelect ? statusSelect.value : null;
+            if (val === 'closed') {
+                ev.preventDefault();
+                if (modal) modal.show();
+            }
+        });
+    }
+
+    // show modal immediately if select changed to closed (optional UX)
+    if (statusSelect) {
+        statusSelect.addEventListener('change', function(){
+            if (this.value === 'closed' && modal) {
+                modal.show();
+            }
+        });
+    }
+
+    if (modalSave) {
+        modalSave.addEventListener('click', function(){
+            // read modal inputs
+            const tindak = document.getElementById('modal-tindak').value || '';
+            const media = document.getElementById('modal-media').value || '';
+            // set hidden inputs
+            document.getElementById('tindak_lanjut_closing').value = tindak;
+            document.getElementById('media_closing').value = media;
+            // closing_at formatted for MySQL DATETIME: YYYY-MM-DD HH:MM:SS
+            const dt = new Date();
+            const yyyy = dt.getFullYear();
+            const mm = String(dt.getMonth()+1).padStart(2,'0');
+            const dd = String(dt.getDate()).padStart(2,'0');
+            const hh = String(dt.getHours()).padStart(2,'0');
+            const mi = String(dt.getMinutes()).padStart(2,'0');
+            const ss = String(dt.getSeconds()).padStart(2,'0');
+            const formatted = `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
+            document.getElementById('closing_at').value = formatted;
+            // hide modal then submit form (bypass modal handling once)
+            if (modal) modal.hide();
+            bypassModal = true;
+            statusForm.submit();
+        });
+    }
 });
 </script>
 @endif

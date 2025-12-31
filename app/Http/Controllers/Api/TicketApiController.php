@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification as NotificationFacade;
 use App\Notifications\TicketCreatedNotification;
 use App\Notifications\TicketAssignedNotification;
+use App\Notifications\TicketStatusCheckedNotification;
 
 class TicketApiController extends Controller
 {
@@ -26,6 +27,15 @@ class TicketApiController extends Controller
 
             if (!$ticket) {
                 return response()->json(['success' => false, 'message' => 'Ticket not found'], 404);
+            }
+
+            // send status result to pelapor email if present
+            try {
+                if (!empty($ticket->email)) {
+                    NotificationFacade::route('mail', $ticket->email)->notify(new TicketStatusCheckedNotification($ticket));
+                }
+            } catch (\Throwable $e) {
+                \Log::error('send ticket status checked email failed: ' . $e->getMessage());
             }
 
             return response()->json(['success' => true, 'ticket' => $ticket], 200);
