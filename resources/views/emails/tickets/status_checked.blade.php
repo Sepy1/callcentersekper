@@ -12,3 +12,4 @@ Berikut adalah status terbaru untuk tiket Anda.
 
 Terima kasih,
 PT BPR BKK Jateng 
+@endcomponent
