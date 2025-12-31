@@ -1,7 +1,7 @@
 @component('mail::message')
 # Tiket Ditutup: {{ $ticket->nomor_tiket }}
 
-Halo {{ $notifiable->name ?? '' }},
+Halo {{ $ticket->nama_pelapor ?? '' }},
 
 Tiket Anda telah ditutup.
 
@@ -12,5 +12,5 @@ Tiket Anda telah ditutup.
 Terima kasih telah menggunakan layanan kami.
 
 Salam,
-{{ config('app.name') }}
+PT BPR BKK Jateng (Perseroda)
 @endcomponent

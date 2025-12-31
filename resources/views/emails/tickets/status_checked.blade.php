@@ -1,7 +1,7 @@
 @component('mail::message')
 # Status Tiket: {{ $ticket->nomor_tiket }}
 
-Halo {{ $notifiable->name ?? '' }},
+Halo {{ $ticket->nama_pelapor ?? '' }},
 
 Berikut adalah status terbaru untuk tiket Anda.
 
@@ -11,5 +11,4 @@ Berikut adalah status terbaru untuk tiket Anda.
 
 
 Terima kasih,
-{{ config('app.name') }}
-@endcomponent
+PT BPR BKK Jateng (Perseroda)
