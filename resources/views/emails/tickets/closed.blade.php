@@ -12,5 +12,5 @@ Tiket Anda telah ditutup.
 Terima kasih telah menggunakan layanan kami.
 
 Salam,
-PT BPR BKK Jateng (Perseroda)
+PT BPR BKK Jateng 
 @endcomponent

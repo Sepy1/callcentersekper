@@ -16,5 +16,5 @@ Klik tombol di bawah untuk melihat detail tiket pada panel admin / QA.
 @endif
 
 Terima kasih,
-PT BPR BKK Jateng (Perseroda)
+PT BPR BKK Jateng 
 @endcomponent
