@@ -124,12 +124,18 @@
 
                                 {{-- HEADER --}}
                                 <div class="card-header bg-transparent text-center pt-4 pb-2">
-                                    <h3 class="font-weight-bolder text-info text-gradient mb-1">
-                                        Selamat Datang
-                                    </h3>
-                                    <p class="text-sm text-muted mb-0">
-                                        Call Center System
-                                    </p>
+                                      {{-- LOGO --}}
+    <img src="/assets/img/logo.png"
+         alt="Logo CCS"
+         class="mb-3"
+         style="max-width: 120px; height: auto;">
+
+    <h3 class="font-weight-bolder text-info text-gradient mb-1">
+        Selamat Datang
+    </h3>
+    <p class="text-sm text-muted mb-0">
+        Call Center System
+    </p>
                                 </div>
 
                                 {{-- BODY --}}
