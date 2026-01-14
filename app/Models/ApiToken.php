@@ -11,9 +11,10 @@ class ApiToken extends Model
 
     protected $table = 'api_tokens';
 
-    protected $fillable = ['name', 'token', 'abilities'];
+    protected $fillable = ['name', 'token', 'abilities', 'allowed_ips'];
 
     protected $casts = [
         'abilities' => 'array',
+        'allowed_ips' => 'array',
     ];
 }
