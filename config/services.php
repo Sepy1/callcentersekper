@@ -35,6 +35,7 @@ return [
     'system_id'  => env('DEP_SYSTEM_ID'),
     'secret_key' => env('DEP_SECRET_KEY'),
     'salt'       => env('DEP_SALT'),
+    'timeout'    => env('DEP_TIMEOUT', 30),
 ],
 
 ];

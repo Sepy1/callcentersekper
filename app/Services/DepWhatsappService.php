@@ -84,7 +84,7 @@ class DepWhatsappService
 
         Log::info("DEP REQUEST [$op]", $req['body']);
 
-        $response = Http::timeout(15)
+        $response = Http::timeout(config('services.dep.timeout', 15))
             ->withHeaders($req['headers'])
             ->post($this->baseUrl . $req['endpoint'], $req['body']);
 
