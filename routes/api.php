@@ -28,4 +28,6 @@ Route::get('/tickets/{id}', [TicketApiController::class, 'show']);
 Route::middleware(['api.token','api.request.log'])->group(function () {
     Route::get('/wa/templates', [WhatsappController::class, 'templates']);
     Route::post('/wa/send', [WhatsappController::class, 'send']);
+    // Public-ish categories list for clients/admins (no auth by default)
+    Route::get('/categories', [\App\Http\Controllers\Api\CategoryApiController::class, 'index']);
 });

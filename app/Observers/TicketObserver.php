@@ -39,6 +39,25 @@ class TicketObserver
                 'error'     => $e->getMessage(),
             ]);
         }
+
+        // Schedule SLA reminder job (delayed by sla_days - 1)
+        try {
+            $sla = (int) \App\Models\Setting::getValue('sla_days', 2);
+            // H-1 means schedule at (created_at + (sla_days - 1) days).
+            // if sla_days == 1 then H-1 == creation time -> dispatch immediately.
+            $delayDays = max(0, $sla - 1);
+            $dispatchAt = $ticket->created_at->copy()->addDays($delayDays);
+
+            if ($delayDays > 0) {
+                \App\Jobs\SendSlaReminder::dispatch($ticket->id)->delay($dispatchAt);
+            } else {
+                \App\Jobs\SendSlaReminder::dispatch($ticket->id);
+            }
+
+            Log::info('SLA REMINDER SCHEDULED', ['ticket_id' => $ticket->id, 'delay_days' => $delayDays, 'dispatch_at' => $dispatchAt->toDateTimeString()]);
+        } catch (\Throwable $e) {
+            Log::error('SLA REMINDER SCHEDULE FAILED', ['ticket_id' => $ticket->id, 'err' => $e->getMessage()]);
+        }
     }
 
     /**

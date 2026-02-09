@@ -331,6 +331,15 @@ Route::post('/whatsapp/send-template', [WhatsappSendTemplateController::class, '
 		return view('admin.dashboard-admin');
 	})->middleware('auth')->name('admin.dashboard.admin');
 
+    // Admin: SLA settings
+    Route::get('/admin/settings/sla', [\App\Http\Controllers\Admin\SettingsController::class, 'editSla'])->middleware('auth')->name('admin.settings.sla');
+    Route::post('/admin/settings/sla', [\App\Http\Controllers\Admin\SettingsController::class, 'updateSla'])->middleware('auth')->name('admin.settings.sla.update');
+
+    // Admin: categories management
+    Route::post('/admin/settings/categories', [\App\Http\Controllers\Admin\CategoryController::class, 'store'])->middleware('auth')->name('admin.settings.categories.store');
+    Route::put('/admin/settings/categories/{id}', [\App\Http\Controllers\Admin\CategoryController::class, 'update'])->middleware('auth')->name('admin.settings.categories.update');
+    Route::delete('/admin/settings/categories/{id}', [\App\Http\Controllers\Admin\CategoryController::class, 'destroy'])->middleware('auth')->name('admin.settings.categories.destroy');
+
     // Officer: custom dashboard view (dashboard-officer)
     Route::get('/officer/dashboard-officer', function () {
         return view('officer.dashboard-officer');
