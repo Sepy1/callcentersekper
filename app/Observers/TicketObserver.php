@@ -21,7 +21,7 @@ class TicketObserver
             // dispatch a queued job to send WA open template
             \App\Jobs\SendWhatsappTemplate::dispatch(
                 $this->normalizePhone($ticket->hp),
-                '1557389545282102',
+                'notifikasi_tiket_open',
                 'id',
                 [
                     $ticket->nama_pelapor,
@@ -54,7 +54,7 @@ class TicketObserver
                 // queue the WA close notification
                 \App\Jobs\SendWhatsappTemplate::dispatch(
                     $this->normalizePhone($ticket->hp),
-                    '734693812466588',
+                    'notifikasi_tiket_close',
                     'id',
                     [
                         $ticket->nama_pelapor,

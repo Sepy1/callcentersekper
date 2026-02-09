@@ -53,12 +53,24 @@ class WhatsappController extends Controller
             if (!empty($data['text']) && empty($data['template_id']) && empty($data['template_name'])) {
                 $res = $svc->sendText($data['phone'], $data['text']);
             } elseif (!empty($data['template_id'])) {
-                $res = $svc->sendTemplateById(
-                    $data['phone'],
-                    $data['template_id'],
-                    $data['language'] ?? 'id',
-                    $data['params'] ?? []
-                );
+                // map legacy template_id to provider template name when known
+                $mapped = $this->mapTemplateIdToName($data['template_id']);
+                if ($mapped) {
+                    $res = $svc->sendTemplateByName(
+                        $data['phone'],
+                        $mapped,
+                        $data['language'] ?? 'id',
+                        $data['params'] ?? []
+                    );
+                } else {
+                    // fallback to id-based call for backward compatibility
+                    $res = $svc->sendTemplateById(
+                        $data['phone'],
+                        $data['template_id'],
+                        $data['language'] ?? 'id',
+                        $data['params'] ?? []
+                    );
+                }
             } elseif (!empty($data['template_name'])) {
                 $res = $svc->sendTemplateByName(
                     $data['phone'],
@@ -76,4 +88,15 @@ class WhatsappController extends Controller
             return response()->json(['error' => 'Internal server error', 'message' => $e->getMessage()], 500);
         }
     }
+
+    private function mapTemplateIdToName(string $id): ?string
+    {
+        $map = [
+            '1557389545282102' => 'notifikasi_tiket_open',
+            '734693812466588' => 'notifikasi_tiket_close',
+        ];
+
+        return $map[$id] ?? null;
+    }
+
 }

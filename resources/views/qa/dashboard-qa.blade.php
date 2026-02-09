@@ -187,10 +187,10 @@
                 <input type="date" id="end_date" name="end_date" class="form-control" value="{{ request('end_date') }}">
               </div>
             </div>
-            <div class="mt-3">
+            <div class="d-flex gap-2 mt-3">
               <button type="button" id="filter-button" class="btn btn-primary btn-sm">Terapkan</button>
-              <button type="button" id="download-nominatif" class="btn btn-secondary btn-sm ms-2">Download Nominatif</button>
-              <button type="button" id="generate-pdf" class="btn btn-outline-secondary btn-sm ms-2">Generate PDF</button>
+              <button type="button" id="download-nominatif" class="btn btn-outline-secondary btn-sm">Download Nominatif</button>
+              <button type="button" id="generate-pdf" class="btn btn-outline-secondary btn-sm">Generate PDF</button>
             </div>
           </form>
           <!-- Resilient fallback: attach a minimal click handler that fetches chart JSON and shows a summary.
@@ -247,31 +247,32 @@
                     } catch(e){ console.error(e); }
                   }).catch(function(err){ console.error('fetch chart-data failed', err); alert('Gagal mengambil data grafik. Lihat console.'); });
                 });
-                // Download nominatif handler
-                var downloadBtn = document.getElementById('download-nominatif');
-                if (downloadBtn) {
-                  downloadBtn.addEventListener('click', function(ev){
-                    ev.preventDefault && ev.preventDefault();
-                    var s = (document.getElementById('start_date')||{}).value || '';
-                    var e = (document.getElementById('end_date')||{}).value || '';
-                    var url = '{{ url('/') }}' + '/admin/tickets/download-nominatif?start_date=' + encodeURIComponent(s) + '&end_date=' + encodeURIComponent(e);
-                    window.open(url, '_blank');
-                  });
-                }
-
-                // Generate PDF handler
-                var pdfBtn = document.getElementById('generate-pdf');
-                if (pdfBtn) {
-                  pdfBtn.addEventListener('click', function(ev){
-                    ev.preventDefault && ev.preventDefault();
-                    var s = (document.getElementById('start_date')||{}).value || '';
-                    var e = (document.getElementById('end_date')||{}).value || '';
-                    var url = '{{ url('/') }}' + '/admin/tickets/generate-pdf?start_date=' + encodeURIComponent(s) + '&end_date=' + encodeURIComponent(e);
-                    window.open(url, '_blank');
-                  });
-                }
               } catch(e) { console.error('fallback handler attach failed', e); }
             })();
+          </script>
+          <script>
+            // Actions for Download Nominatif / Generate PDF from QA dashboard
+            document.addEventListener('DOMContentLoaded', function(){
+              const downloadBtn = document.getElementById('download-nominatif');
+              const pdfBtn = document.getElementById('generate-pdf');
+              function buildQueryUrl(path){
+                const s = (document.getElementById('start_date')||{}).value || '';
+                const e = (document.getElementById('end_date')||{}).value || '';
+                return path + '?start_date=' + encodeURIComponent(s) + '&end_date=' + encodeURIComponent(e);
+              }
+              if (downloadBtn){
+                downloadBtn.addEventListener('click', function(){
+                  const url = buildQueryUrl('{{ url('/admin/tickets/download-nominatif') }}');
+                  window.location.href = url;
+                });
+              }
+              if (pdfBtn){
+                pdfBtn.addEventListener('click', function(){
+                  const url = buildQueryUrl('{{ url('/admin/tickets/generate-pdf') }}');
+                  window.open(url, '_blank');
+                });
+              }
+            });
           </script>
           <div class="chart">
             <canvas id="ticket-chart" class="chart-canvas" height="200"></canvas>

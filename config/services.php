@@ -38,4 +38,10 @@ return [
     'timeout'    => env('DEP_TIMEOUT', 30),
 ],
 
+        'mahadata' => [
+            'endpoint' => env('MAHADATA_ENDPOINT', 'https://messaging.mahadata.io/v1/116214948217846/messages'),
+            'token' => env('MAHADATA_TOKEN'),
+            'timeout' => env('MAHADATA_TIMEOUT', 15),
+        ],
+
 ];
