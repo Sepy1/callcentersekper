@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\TicketApiController;
 use App\Http\Controllers\Api\WhatsappController;
+use App\Http\Controllers\Api\CategoryApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,11 +27,12 @@ Route::options('{any}', function () { return response()->noContent(); })->where(
 // API endpoints for tickets
 Route::post('/tickets', [TicketApiController::class, 'store']);
 Route::get('/tickets/{id}', [TicketApiController::class, 'show']);
+// Public categories list
+Route::get('/categories', [CategoryApiController::class, 'index']);
 
 // Protected WA endpoints: require Authorization: Bearer <token> and will be logged
 Route::middleware(['api.token','api.request.log'])->group(function () {
     Route::get('/wa/templates', [WhatsappController::class, 'templates']);
     Route::post('/wa/send', [WhatsappController::class, 'send']);
-    // Public-ish categories list for clients/admins (no auth by default)
-    Route::get('/categories', [\App\Http\Controllers\Api\CategoryApiController::class, 'index']);
+    
 });
