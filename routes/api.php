@@ -20,6 +20,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// Respond to CORS preflight for any API path if webserver forwards OPTIONS
+Route::options('{any}', function () { return response()->noContent(); })->where('any', '.*');
+
 // API endpoints for tickets
 Route::post('/tickets', [TicketApiController::class, 'store']);
 Route::get('/tickets/{id}', [TicketApiController::class, 'show']);
