@@ -54,7 +54,8 @@ class Ticket extends Model
             $message = "Tiket {$ticket->nomor_tiket} perlu di-resolved oleh QA.";
             $link = url('qa/tindak-lanjut') . '?ticket_id=' . $ticket->id . '&nomor_tiket=' . urlencode($ticket->nomor_tiket);
 
-            $qas = User::where('role', 'qa')->get(['id']);
+            // ambil seluruh data user QA (email diperlukan untuk channel mail)
+            $qas = User::where('role', 'qa')->get();
             foreach ($qas as $qa) {
                 // hindari duplikat notifikasi untuk QA yang sama + ticket
                 $exists = DB::table((new Notification)->getTable())
@@ -73,6 +74,16 @@ class Ticket extends Model
                         'data' => ['ticket_id' => $ticketId, 'nomor_tiket' => $ticket->nomor_tiket ?? null, 'reason' => 'all_officers_proses_qa'],
                     ]);
                 }
+            }
+
+            // kirim email ke QA (jika ada) agar mereka diberitahu
+            try {
+                $notifiableQas = $qas->filter(fn($u) => !empty($u->email));
+                if ($notifiableQas->isNotEmpty()) {
+                    \Illuminate\Support\Facades\Notification::send($notifiableQas, new \App\Notifications\TicketNeedQaNotification($ticket));
+                }
+            } catch (\Throwable $e) {
+                Log::error('send QA needed email failed', ['ticket_id' => $ticketId, 'err' => $e->getMessage()]);
             }
         } catch (\Throwable $e) {
             Log::error('notifyQaIfAllOfficersProsesQa error', ['ticket_id' => $ticketId, 'err' => $e->getMessage()]);
