@@ -61,4 +61,31 @@ class KonfirmasiWabaController extends Controller
 
         return $digits;
     }
+
+    /**
+     * Check WABA by hp and return nasabah_id, nama_nasabah, waba
+     */
+    public function cekByHp(Request $request)
+    {
+        $data = $request->validate([
+            'hp' => 'required|string|max:50',
+        ]);
+
+        $hp = $this->normalizeHp($data['hp']);
+
+        $record = KonfirmasiWaba::where('hp', $hp)->first();
+
+        if (! $record) {
+            return response()->json(['success' => false, 'message' => 'Record not found for given hp'], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'nasabah_id' => $record->nasabah_id,
+                'nama_nasabah' => $record->nama_nasabah,
+                'waba' => $record->waba,
+            ],
+        ]);
+    }
 }

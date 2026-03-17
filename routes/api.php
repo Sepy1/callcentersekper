@@ -41,4 +41,7 @@ Route::middleware(['api.token','api.request.log'])->group(function () {
     
     // Update WABA by hp
     Route::post('/konfirmasiwaba', [KonfirmasiWabaController::class, 'updateByHp']);
+
+    // Check WABA by hp
+    Route::post('/cekwaba', [KonfirmasiWabaController::class, 'cekByHp']);
 });
