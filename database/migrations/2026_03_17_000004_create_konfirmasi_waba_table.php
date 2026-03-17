@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('konfirmasi_waba', function (Blueprint $table) {
             $table->id();
             // nasabah_id as string to preserve leading zeros (e.g. 000000010)
-            $table->string('nasabah_id', 50)->unique();
-            $table->string('nama_nasabah', 255);
+            $table->string('nasabah_id', 50)->nullable()->unique();
+            $table->string('nama_nasabah', 255)->nullable();
             $table->text('alamat')->nullable();
             $table->string('hp', 50)->nullable();
             $table->string('waba', 255)->nullable();

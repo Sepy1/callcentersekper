@@ -21,7 +21,13 @@ class KonfirmasiWabaController extends Controller
         $record = KonfirmasiWaba::where('hp', $data['hp'])->first();
 
         if (! $record) {
-            return response()->json(['success' => false, 'message' => 'Record not found for given hp'], 404);
+            // create a new record with hp and waba, leave other fields null
+            $record = KonfirmasiWaba::create([
+                'hp' => $data['hp'],
+                'waba' => $data['waba'],
+            ]);
+
+            return response()->json(['success' => true, 'data' => $record], 201);
         }
 
         $record->waba = $data['waba'];
