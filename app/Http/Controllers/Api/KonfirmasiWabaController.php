@@ -21,7 +21,16 @@ class KonfirmasiWabaController extends Controller
         // normalize hp (e.g. +6285421xxx or 6285421xxx -> 085421xxx)
         $hp = $this->normalizeHp($data['hp']);
 
-        $record = KonfirmasiWaba::where('hp', $hp)->first();
+        // prepare candidate forms: local 0-prefixed and country-code 62-prefixed
+        $candidates = [$hp];
+        if (strpos($hp, '0') === 0) {
+            $candidates[] = '62' . substr($hp, 1);
+            $candidates[] = ltrim($hp, '0');
+        }
+        $candidates = array_values(array_unique(array_filter($candidates)));
+
+        // find record matching any stored variant (e.g. stored as 62... or 0...)
+        $record = KonfirmasiWaba::whereIn('hp', $candidates)->first();
 
         if (! $record) {
             // create a new record with normalized hp and waba, leave other fields null
@@ -31,6 +40,11 @@ class KonfirmasiWabaController extends Controller
             ]);
 
             return response()->json(['success' => true, 'data' => $record], 201);
+        }
+
+        // if found record uses 62-prefix (or other variant), normalize stored value to 0-prefixed
+        if ($record->hp !== $hp) {
+            $record->hp = $hp;
         }
 
         $record->waba = $data['waba'];
