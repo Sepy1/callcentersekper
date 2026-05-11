@@ -75,10 +75,101 @@
 .timeline-content {
     width: 100%;
 }
+
+.followup-page {
+    padding-top: 0.25rem;
+    padding-bottom: 1rem;
+}
+
+.followup-layout-row {
+    row-gap: 1rem;
+    align-items: stretch;
+}
+
+.followup-main-card,
+.followup-chat-card {
+    border: 0;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    height: 100%;
+    margin-bottom: 0 !important;
+}
+
+.followup-main-card > .card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.followup-chat-card > .card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-height: 0;
+}
+
+.detail-ticket-compact {
+    height: 320px;
+    min-height: 320px;
+}
+
+.detail-ticket-compact .flip-card-front,
+.detail-ticket-compact .flip-card-back {
+    overflow-y: auto;
+}
+
+.detail-ticket-compact .card-body {
+    padding: 0.7rem !important;
+}
+
+.detail-ticket-compact .card-body h5 {
+    font-size: 1rem !important;
+    line-height: 1.2;
+    margin-top: 0.45rem !important;
+    margin-bottom: 0.45rem !important;
+}
+
+.detail-ticket-compact .card-body h6 {
+    font-size: 0.74rem !important;
+    line-height: 1.2;
+    margin-bottom: 0.12rem !important;
+}
+
+.detail-ticket-compact .card-body p,
+.detail-ticket-compact .card-body .small,
+.detail-ticket-compact .card-body div {
+    font-size: 0.66rem;
+    line-height: 1.2;
+}
+
+.detail-ticket-compact .card-body .badge {
+    font-size: 0.6rem !important;
+    padding: 0.28rem 0.45rem !important;
+}
+
+.detail-ticket-compact .flip-card-back .mt-1 { margin-top: 0.2rem !important; }
+.detail-ticket-compact .flip-card-back .mt-2 { margin-top: 0.35rem !important; }
+.detail-ticket-compact .flip-card-back .mt-3 { margin-top: 0.45rem !important; }
+
+.officer-compact-card {
+    height: 320px;
+    min-height: 320px;
+}
+
+.officer-compact-body {
+    overflow-y: auto;
+}
+
+@media (min-width: 1200px) {
+    .followup-chat-card {
+        position: sticky;
+        top: 1rem;
+    }
+}
 </style>
 
 
-<div class="container-fluid py-2">
+<div class="container-fluid py-2 followup-page">
 	<style>
 		/* flip card for ticket detail */
 		.flip-card { perspective: 1000px; position: relative; }
@@ -132,9 +223,9 @@
     </div>
     @endif
 
-    <div class="row" style="min-height: calc(100vh - 100px);">
-        <div class="col-lg-9 d-flex flex-column" style="gap: 1.5rem;">
-            <div class="card flex-fill h-100 mb-3">
+    <div class="row followup-layout-row">
+        <div class="col-12 col-xl-8 d-flex flex-column" style="gap: 1rem;">
+            <div class="card followup-main-card h-100 flex-fill">
                 <div class="card-header pb-0">
                     <h6 class="mb-0">Tindak Lanjut Tiket</h6>
                 </div>
@@ -168,10 +259,10 @@
                     {{-- Card Detail Tiket: split into info (left) and officer list (right) --}}
                     @if(!empty($ticket))
                         @php $functions_disabled = in_array($ticket->status, ['closed','rejected']); @endphp
-                        <div id="detail-tiket-card" class="mb-3">
-                            <div class="row g-3">
+                        <div id="detail-tiket-card" class="mb-2">
+                            <div class="row g-3 detail-top-row">
                                 <div class="col-md-6">
-                                    <div class="flip-card" id="ticket-flip" aria-pressed="false" role="button" tabindex="0" title="Klik untuk melihat informasi pelapor">
+                                    <div class="flip-card detail-ticket-compact" id="ticket-flip" aria-pressed="false" role="button" tabindex="0" title="Klik untuk melihat informasi pelapor">
                                         <div class="flip-card-inner">
                                             <div class="flip-card-front">
                                                 <div class="card h-100">
@@ -207,7 +298,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="card h-100">
+                                    <div class="card h-100 officer-compact-card">
                                         <div class="card-header pb-0 d-flex justify-content-between align-items-center">
                                             <h6 class="mb-0">Officer Tertugaskan (TL & Lampiran)</h6>
                                             <div>
@@ -216,7 +307,7 @@
                                                 </button>
                                             </div>
                                         </div>
-                                        <div class="card-body p-2">
+                                        <div class="card-body p-2 officer-compact-body">
                                             {{-- QA Summary (highlight orange) --}}
                                             <div class="card mb-2" style="background:#ff7a00;color:#fff;">
                                                 <div class="card-body p-2">
@@ -347,32 +438,28 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-3 d-flex flex-column" style="gap: 1.5rem;">
-            <div class="card flex-fill h-100" id="chat-card">
+        <div class="col-12 col-xl-4 d-flex flex-column" style="gap: 1rem;">
+            <div class="card followup-chat-card h-100 flex-fill" id="chat-card">
                 <div class="card-header pb-0 d-flex justify-content-between align-items-center">
                     <h6 class="mb-0">Chat Tindak Lanjut</h6>
                 </div>
-                <div class="card-body p-2" style="height:520px;">
+                <div class="card-body p-2 d-flex flex-column" style="height:100%; min-height:0;">
                     @if(!empty($ticket))
-                        {{-- Card atas: chat messages --}}
-                        <div class="card mb-2" style="height:70%;">
-                            <div class="card-body p-2 h-100 d-flex flex-column" style="min-height:0;">
-                                <div id="chat-messages" class="h-100 overflow-auto" style="padding:8px; background:#f8f9fa; border-radius:8px; display:flex;flex-direction:column;gap:10px;"></div>
-                            </div>
+                        <div id="chat-messages-wrapper" style="flex:1 1 auto; min-height:0;">
+                            <div id="chat-messages" class="h-100 overflow-auto" style="padding:8px; background:#f8f9fa; border-radius:8px; display:flex;flex-direction:column;gap:10px;"></div>
                         </div>
 
-                        {{-- Card bawah: input & attachment --}}
-                        <div class="card">
-                            <div class="card-body py-2 d-flex align-items-center" style="gap:.5rem;">
+                        <div class="chat-controls mt-2 pt-2 border-top" style="flex:0 0 auto;">
+                            <div class="d-flex align-items-center" style="gap:.5rem;">
                                 <button
                                     id="btn-attach"
                                     type="button"
                                     class="btn btn-outline-secondary d-inline-flex align-items-center justify-content-center"
                                     title="Lampiran"
                                     aria-label="Lampiran"
-                                    style="width:44px;height:44px;padding:0;border-radius:8px;"
+                                    style="width:36px;height:36px;padding:0;border-radius:8px;"
                                 >
-                                    <svg style="width:20px;height:20px;display:block;margin:auto;" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <svg style="width:16px;height:16px;display:block;margin:auto;" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M6.354 1.5a3.5 3.5 0 0 1 4.95 4.95l-5.657 5.657a2.5 2.5 0 1 1-3.536-3.536l6.364-6.364" stroke="#6c757d" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
                                         <path d="M9.95 3.9l-6.364 6.364a1.5 1.5 0 0 0 2.121 2.121l5.657-5.657" stroke="#6c757d" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
                                     </svg>
@@ -383,7 +470,7 @@
                                     class="form-control flex-grow-1"
                                     placeholder="Ketik pesan..."
                                     aria-label="Chat input"
-                                    style="height:44px;border-radius:8px;"
+                                    style="height:36px;border-radius:8px;font-size:0.8rem;padding-top:0.35rem;padding-bottom:0.35rem;"
                                 />
                                 <button
                                     id="btn-send"
@@ -391,15 +478,15 @@
                                     class="btn btn-primary d-inline-flex align-items-center justify-content-center"
                                     title="Kirim"
                                     aria-label="Kirim"
-                                    style="width:44px;height:44px;padding:0;border-radius:8px;"
+                                    style="width:36px;height:36px;padding:0;border-radius:8px;"
                                 >
-                                    <svg style="width:20px;height:20px;display:block;margin:auto;" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <svg style="width:16px;height:16px;display:block;margin:auto;" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M15.854.146a.5.5 0 0 0-.525-.116l-15 6a.5.5 0 0 0 .03.95l6.067 2.023L8.45 14.97a.5.5 0 0 0 .95.03l6-15a.5.5 0 0 0-.116-.525z" fill="#fff"/>
                                     </svg>
                                 </button>
                             </div>
                             <input type="file" id="chat-file" class="d-none">
-                            <div id="chat-attachment-preview" class="mt-2 small"></div>
+                            <div id="chat-attachment-preview" class="mt-2 small text-muted"></div>
                         </div>
                     @else
                         <div class="text-center text-muted">Cari tiket untuk mulai chat.</div>
@@ -765,7 +852,8 @@ document.addEventListener('DOMContentLoaded', function(){
     const adjustHeight = () => {
         if (!front || !flip) return;
         // measure rendered height of front content
-        const h = front.scrollHeight;
+        const maxCompactHeight = 320;
+        const h = Math.min(front.scrollHeight, maxCompactHeight);
         flip.style.minHeight = h + 'px';
         if (inner) inner.style.minHeight = h + 'px';
     };

@@ -52,9 +52,14 @@
   {{-- CSRF token for AJAX requests --}}
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <style>
+    html { font-size: 80%; }
+    html, body { min-height: 100%; overflow-x: hidden; }
+    body {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
     html.page-transition { opacity: 0; transition: opacity 320ms ease-in-out; }
     html.page-transition.is-visible { opacity: 1; }
-    body { -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
   </style>
 </head>
 

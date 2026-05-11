@@ -1,6 +1,40 @@
 @extends('layouts.user_type.auth')
 
 @section('content')
+<style>
+  .need-process-table-wrap {
+    flex: 1 1 auto;
+    position: relative;
+    max-height: calc(100vh - 360px);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .need-process-table {
+    width: 100%;
+    table-layout: fixed;
+    font-size: 0.8rem;
+  }
+  .need-process-table th,
+  .need-process-table td {
+    padding: 0.35rem 0.45rem;
+    vertical-align: middle;
+  }
+  .need-process-table .col-no { width: 8%; }
+  .need-process-table .col-ticket { width: 24%; }
+  .need-process-table .col-status { width: 15%; }
+  .need-process-table .col-title { width: 35%; }
+  .need-process-table .col-action { width: 18%; }
+  .need-process-table td:nth-child(2),
+  .need-process-table td:nth-child(4) {
+    white-space: normal;
+    word-break: break-word;
+  }
+  .need-process-table .btn {
+    font-size: 0.72rem;
+    padding: 0.25rem 0.5rem;
+    white-space: nowrap;
+  }
+</style>
 <div class="container-fluid py-4">
   {{-- Card besar untuk membungkus semua card kecil --}}
   <div class="card">
@@ -132,8 +166,15 @@
         <div class="card-body p-3 d-flex flex-column" style="height:100%;">
           <h6 class="text-uppercase font-weight-bold mb-3">Butuh Proses Saya</h6>
           <!-- batasi tinggi tabel agar tidak melebihi viewport dan buat scroll internal -->
-          <div style="flex:1 1 auto; overflow:auto; position: relative; max-height: calc(100vh - 360px);">
-            <table class="table table-hover table-sm">
+          <div class="need-process-table-wrap">
+            <table class="table table-hover table-sm need-process-table">
+              <colgroup>
+                <col class="col-no">
+                <col class="col-ticket">
+                <col class="col-status">
+                <col class="col-title">
+                <col class="col-action">
+              </colgroup>
               <thead class="sticky-top bg-white" style="z-index: 1;">
                 <tr>
                   <th scope="col">#</th>
