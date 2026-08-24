@@ -50,9 +50,11 @@
                         {{-- Kategori --}}
                         <select name="kategori" class="form-select form-select-sm rounded-pill">
                             <option value="">Semua Kategori</option>
-                            <option value="Informasi" {{ request('kategori')=='Informasi'?'selected':'' }}>Informasi</option>
-                            <option value="Layanan" {{ request('kategori')=='Layanan'?'selected':'' }}>Layanan</option>
-                            <option value="Pengaduan" {{ request('kategori')=='Pengaduan'?'selected':'' }}>Pengaduan</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->name }}" {{ request('kategori') === $category->name ? 'selected' : '' }}>
+                                    {{ $category->name }}
+                                </option>
+                            @endforeach
                         </select>
 
                         {{-- Submit --}}
@@ -203,9 +205,13 @@
                             <label class="form-label fw-bold">Kategori</label>
                             <select name="kategori" class="form-select" required>
                                 <option value="">Pilih Kategori</option>
-                                <option value="Informasi">Informasi</option>
-                                <option value="Layanan">Layanan</option>
-                                <option value="Pengaduan">Pengaduan</option>
+                                @forelse($categories as $category)
+                                    <option value="{{ $category->name }}" {{ old('kategori') === $category->name ? 'selected' : '' }}>
+                                        {{ $category->name }}
+                                    </option>
+                                @empty
+                                    <option value="" disabled>Belum ada kategori di Pengaturan</option>
+                                @endforelse
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -218,7 +224,7 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">HP</label>
-                            <input type="text" name="hp" id="create-hp" class="form-control">
+                            <input type="text" name="hp" id="create-hp" class="form-control" required>
                         </div>
                         {{-- Nasabah extra fields (hidden unless tipe_pelapor == Nasabah) --}}
                         <div id="nasabah-fields" class="w-100" style="display:none;">
@@ -315,9 +321,11 @@
                             <label class="form-label fw-bold">Kategori</label>
                             <select name="kategori" id="edit-kategori" class="form-select" required>
                                 <option value="">Pilih Kategori</option>
-                                <option value="Informasi">Informasi</option>
-                                <option value="Layanan">Layanan</option>
-                                <option value="Pengaduan">Pengaduan</option>
+                                @forelse($categories as $category)
+                                    <option value="{{ $category->name }}">{{ $category->name }}</option>
+                                @empty
+                                    <option value="" disabled>Belum ada kategori di Pengaturan</option>
+                                @endforelse
                             </select>
                         </div>
                         <div class="col-md-6">

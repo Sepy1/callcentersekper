@@ -13,31 +13,31 @@ class TicketObserver
      */
     public function created(Ticket $ticket): void
     {
-        if ($ticket->status !== 'open') {
-            return;
-        }
+        $phone = $this->normalizePhone($ticket->hp);
 
-        try {
-            // dispatch a queued job to send WA open template
-            \App\Jobs\SendWhatsappTemplate::dispatch(
-                $this->normalizePhone($ticket->hp),
-                'notifikasi_tiket_open',
-                'id',
-                [
-                    $ticket->nama_pelapor,
-                    $ticket->nomor_tiket,
-                    $ticket->judul,
-                    $ticket->kategori,
-                    $ticket->created_at->format('d F Y'),
-                ]
-            );
+        if ($phone !== '') {
+            try {
+                // Dispatch notifikasi tiket baru tanpa bergantung pada status awal tiket.
+                \App\Jobs\SendWhatsappTemplate::dispatch(
+                    $phone,
+                    'notifikasi_tiket_open',
+                    'id',
+                    [
+                        $ticket->nama_pelapor,
+                        $ticket->nomor_tiket,
+                        $ticket->judul,
+                        $ticket->kategori,
+                        $ticket->created_at->format('d F Y'),
+                    ]
+                );
 
-            Log::info('WA OPEN QUEUED', ['ticket_id' => $ticket->id]);
-        } catch (\Throwable $e) {
-            Log::error('WA OPEN QUEUE FAILED', [
-                'ticket_id' => $ticket->id,
-                'error'     => $e->getMessage(),
-            ]);
+                Log::info('WA OPEN QUEUED', ['ticket_id' => $ticket->id]);
+            } catch (\Throwable $e) {
+                Log::error('WA OPEN QUEUE FAILED', [
+                    'ticket_id' => $ticket->id,
+                    'error'     => $e->getMessage(),
+                ]);
+            }
         }
 
         // Schedule SLA reminder job (delayed by sla_days - 1)

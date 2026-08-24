@@ -193,7 +193,8 @@ body { background:var(--app-background,var(--hd-bg)) !important; color:#202840; 
 .ticket-field span:not(.officer-name) { display:block; color:#aeb7d8; font-size:.7rem; margin-bottom:.25rem; }.ticket-field strong { display:block; color:#fff; font-size:.82rem; line-height:1.45; font-weight:600; }
 .ticket-field--wide { margin-bottom:.58rem; }.ticket-overview__divider { height:1px; margin:.9rem 0; background:rgba(255,255,255,.1); }.ticket-whatsapp{color:#48d67a;margin-left:.35rem}.officer-name{display:inline-block;margin:0 .3rem .2rem 0}.officer-name.is-complete{color:#69dd8e}
 .ticket-overview__hint { color:#929dbc; font-size:.65rem; margin-top:.8rem; }.ticket-overview__hint i{margin-right:.35rem}
-.flip-card-back { padding:1.35rem; border:1px solid var(--hd-border); border-radius:15px; background:#fff !important; color:#30384e; box-shadow:0 8px 24px rgba(21,31,53,.08); }
+.flip-card-back { padding:1.35rem; border:1px solid rgba(255,255,255,.14); border-radius:15px; background:var(--app-ticket-card,linear-gradient(145deg,#20285d 0%,#142039 100%)) !important; color:#fff; box-shadow:0 8px 24px rgba(21,31,53,.08); transition:background .2s ease; }
+.flip-card-back h6,.flip-card-back strong { color:#fff!important; }.flip-card-back .text-muted,.flip-card-back .small.text-muted { color:rgba(255,255,255,.68)!important; }.flip-card-back a { color:#dcd6ff; }
 .followup-action-card,.followup-chat-card { border:1px solid var(--hd-border); border-radius:15px; box-shadow:0 6px 22px rgba(26,33,56,.05); overflow:hidden; }
 .followup-action-card>.card-header,.followup-chat-card>.card-header { padding:1.15rem 1.25rem; border-bottom:1px solid var(--hd-border); background:#fff; }
 .followup-action-card>.card-header h6,.followup-chat-card>.card-header h6 { color:#28356b; font-size:.95rem; }

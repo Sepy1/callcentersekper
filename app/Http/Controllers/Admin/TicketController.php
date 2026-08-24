@@ -7,6 +7,7 @@ use App\Models\Ticket;
 use App\Models\User;
 use App\Models\ActivityLog;
 use App\Models\RecycleTicket;
+use App\Models\Category;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -61,7 +62,9 @@ class TicketController extends Controller
             $query->where('kategori', $request->input('kategori'));
         }
         $tickets = $query->orderBy('created_at', 'desc')->paginate(7)->withQueryString();
-        return view('admin.tickets', compact('tickets'));
+        $categories = Category::orderBy('name')->get();
+
+        return view('admin.tickets', compact('tickets', 'categories'));
     }
 
     // Tindak lanjut GET & POST
@@ -269,7 +272,7 @@ class TicketController extends Controller
             'kategori' => 'required|string|max:255',
             'tipe_pelapor' => 'nullable|string|max:255',
             'officer' => 'nullable|string|max:255',
-            'hp' => 'nullable|string|max:20',
+            'hp' => 'required|string|max:20',
             'status' => 'required|string|in:open,in_progress,closed',
             'judul' => 'required|string|max:255',
             'detail' => 'required|string',
