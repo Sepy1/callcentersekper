@@ -16,7 +16,7 @@ class Ticket extends Model
     protected $table = 'tickets';
 
     protected $fillable = [
-        'nomor_tiket', 'nama_pelapor', 'hp', 'email', 'kategori', 'judul', 'detail', 'tindak_lanjut', 'qa_summary', 'status', 'officer', 'waktu_eskalasi', 'tipe_pelapor', 'is_nasabah', 'id_ktp', 'nomor_rekening', 'nama_ibu', 'alamat', 'tempat_lahir', 'tgl_lahir', 'kode_kantor', 'upload_ktp', 'upload_bukti', 'media_closing', 'closing_at'
+        'nomor_tiket', 'nama_pelapor', 'hp', 'email', 'kategori', 'judul', 'detail', 'tindak_lanjut', 'qa_summary', 'qa_attachment', 'status', 'officer', 'waktu_eskalasi', 'tipe_pelapor', 'is_nasabah', 'id_ktp', 'nomor_rekening', 'nama_ibu', 'alamat', 'tempat_lahir', 'tgl_lahir', 'kode_kantor', 'upload_ktp', 'upload_bukti', 'media_closing', 'closing_at'
     ];
 
     protected $casts = [

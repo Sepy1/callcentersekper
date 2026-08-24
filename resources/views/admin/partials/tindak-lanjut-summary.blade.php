@@ -18,6 +18,9 @@
             <div class="card-body p-2">
                 <div class="fw-semibold small mb-1">QA Summary</div>
                 <div class="small">{!! nl2br(e($ticket->qa_summary ?? '-')) !!}</div>
+                @if(!empty($ticket->qa_attachment))
+                    <a href="{{ asset('storage/'.$ticket->qa_attachment) }}" target="_blank" rel="noopener" class="qa-summary-attachment"><i class="fas fa-paperclip"></i><span>{{ \Illuminate\Support\Str::afterLast($ticket->qa_attachment, '/') }}</span></a>
+                @endif
             </div>
         </div>
 

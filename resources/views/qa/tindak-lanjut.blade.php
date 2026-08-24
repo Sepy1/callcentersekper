@@ -294,17 +294,28 @@
                         <div class="row g-2 mb-3">
                             <div class="col-md-6">
                                 <div class="card h-100 followup-role-action-card">
-                                    <div class="card-header"><span class="role-action-icon"><i class="fas fa-clipboard-list"></i></span><h6 class="mb-0">Summary QA</h6></div>
+                                    <div class="card-header"><span class="role-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M9 5h6M9 9h6M9 13h3m4-10h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2m6 14 2 2 4-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h6 class="mb-0">Summary QA</h6></div>
                                     <div class="card-body p-2">
-                                        <form method="POST" action="{{ route('qa.tindak-lanjut') }}">
+                                        <form method="POST" action="{{ route('qa.tindak-lanjut') }}" enctype="multipart/form-data">
                                             @csrf
                                             <input type="hidden" name="nomor_tiket" value="{{ $ticket->nomor_tiket }}">
+                                            @if($ticket->status !== 'resolved')
+                                                <input type="hidden" name="status" value="resolved">
+                                            @endif
                                             <div class="mb-1">
                                                 <label class="small mb-1">Summary QA</label>
-                                                <textarea name="qa_summary" class="form-control form-control-sm" rows="3" placeholder="Ringkasan..." {{ $functions_disabled ? 'readonly' : '' }}>{{ old('qa_summary', $ticket->qa_summary ?? '') }}</textarea>
+                                                <textarea name="qa_summary" class="form-control form-control-sm" rows="3" placeholder="Ringkasan..." {{ ($functions_disabled || $ticket->status === 'resolved') ? 'readonly' : '' }}>{{ old('qa_summary', $ticket->qa_summary ?? '') }}</textarea>
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="small mb-1" for="qa-attachment">Lampiran QA (opsional)</label>
+                                                <input type="file" name="qa_attachment" id="qa-attachment" class="form-control form-control-sm" {{ ($functions_disabled || $ticket->status === 'resolved') ? 'disabled' : '' }}>
+                                                @if(!empty($ticket->qa_attachment))
+                                                    <a href="{{ asset('storage/'.$ticket->qa_attachment) }}" target="_blank" rel="noopener" class="small d-inline-block mt-1">{{ \Illuminate\Support\Str::afterLast($ticket->qa_attachment, '/') }}</a>
+                                                @endif
+                                                @error('qa_attachment')<div class="small text-danger mt-1">{{ $message }}</div>@enderror
                                             </div>
                                             <div class="d-flex justify-content-end">
-                                                <button type="submit" class="btn btn-sm btn-outline-primary" {{ $functions_disabled ? 'disabled' : '' }}>Simpan</button>
+                                                <button type="submit" class="btn btn-sm btn-outline-primary" {{ ($functions_disabled || $ticket->status === 'resolved') ? 'disabled' : '' }}>Simpan</button>
                                             </div>
                                         </form>
                                     </div>
@@ -312,16 +323,16 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="card h-100 followup-role-action-card">
-                                    <div class="card-header"><span class="role-action-icon"><i class="fas fa-clipboard-check"></i></span><h6 class="mb-0">Update Status Tiket</h6></div>
+                                    <div class="card-header"><span class="role-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M9 5h6m-6 4h6m-8 6 2.5 2.5L17 10m-1-7h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h6 class="mb-0">Update Status Tiket</h6></div>
                                     <div class="card-body p-2">
                                         <form method="POST" action="{{ route('qa.tindak-lanjut') }}">
                                             @csrf
                                             <input type="hidden" name="nomor_tiket" value="{{ $ticket->nomor_tiket }}">
                                             <label class="small mb-1 d-block">Update Status</label>
                                             <div class="d-flex gap-2">
-                                                <select name="status" class="form-select form-select-sm" style="min-width:130px;" {{ $functions_disabled ? 'disabled' : '' }}>
+                                                <select name="status" class="form-select form-select-sm" aria-label="Status tiket QA" style="min-width:130px;" {{ $functions_disabled ? 'disabled' : '' }}>
                                                     <option value="on_progress" {{ $ticket->status=='in_progress' ? 'selected' : '' }}>On-Progress</option>
-                                                    <option value="resolved" {{ (isset($canResolve) && $canResolve) ? '' : 'disabled' }}>Resolved</option>
+                                                    <option value="resolved" {{ $ticket->status === 'resolved' ? 'selected disabled' : ((isset($canResolve) && $canResolve) ? '' : 'disabled') }}>Resolved</option>
                                                 </select>
                                                 <button type="submit" class="btn btn-sm btn-outline-success" {{ $functions_disabled ? 'disabled' : '' }}>Update</button>
                                             </div>

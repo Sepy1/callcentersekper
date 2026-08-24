@@ -163,9 +163,18 @@ Route::group(['middleware' => 'auth'], function () {
                 return back()->with('error', 'Tiket tidak ditemukan.');
             }
 
+            $request->validate([
+                'qa_attachment' => 'nullable|file|max:5120',
+            ]);
+
             // save QA summary if provided
-            if ($request->filled('qa_summary')) {
+            if ($request->filled('qa_summary') || $request->hasFile('qa_attachment')) {
                 $ticket->qa_summary = $request->input('qa_summary');
+                if ($request->hasFile('qa_attachment')) {
+                    $file = $request->file('qa_attachment');
+                    $filename = \Illuminate\Support\Str::random(10) . '_' . time() . '.' . $file->getClientOriginalExtension();
+                    $ticket->qa_attachment = $file->storeAs('ticket_qa', $filename, 'public');
+                }
                 $ticket->save();
 
                 // log QA update
@@ -173,7 +182,8 @@ Route::group(['middleware' => 'auth'], function () {
                     'user_id' => auth()->id(),
                     'ticket_id' => $ticket->id,
                     'action' => 'qa_summary_updated',
-                    'detail' => 'QA updated summary: ' . \Illuminate\Support\Str::limit($ticket->qa_summary ?? '', 300),
+                    'detail' => 'QA updated summary: ' . \Illuminate\Support\Str::limit($ticket->qa_summary ?? '', 300)
+                        . ($request->hasFile('qa_attachment') ? ' | Lampiran: ' . \Illuminate\Support\Str::afterLast($ticket->qa_attachment, '/') : ''),
                     'ip' => $request->ip(),
                 ]);
             }

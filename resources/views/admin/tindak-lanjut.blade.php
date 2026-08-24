@@ -216,6 +216,7 @@ body { background:var(--app-background,var(--hd-bg)) !important; color:#202840; 
 .chat-ticket-summary__header h6 { margin:0; color:#28356b; font-size:.82rem; }
 .chat-ticket-summary__body { max-height:285px; padding:.75rem; overflow-y:auto; }
 .chat-ticket-summary .qa-panel,.chat-ticket-summary .closing-panel { color:#fff; }
+.qa-summary-attachment { display:flex;align-items:center;gap:.4rem;margin-top:.55rem;padding:.45rem .55rem;border-radius:7px;background:rgba(255,255,255,.16);color:#fff;font-size:.7rem;font-weight:700;text-decoration:none }.qa-summary-attachment:hover{background:rgba(255,255,255,.24);color:#fff}.qa-summary-attachment span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .chat-ticket-summary__officers { display:flex; flex-direction:column; gap:.55rem; }
 .officer-summary-item { padding:.7rem; border:1px solid var(--hd-border); border-radius:9px; background:#fff; }
 .officer-summary-item__top { display:flex; align-items:center; justify-content:space-between; gap:.5rem; color:#28324b; font-size:.74rem; }
