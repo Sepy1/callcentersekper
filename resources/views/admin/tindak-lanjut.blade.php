@@ -178,7 +178,7 @@ body { background:var(--app-background,var(--hd-bg)) !important; color:#202840; 
 .detail-ticket-compact { width:100%; height:450px; min-height:450px; }
 .detail-ticket-compact { border-radius:15px; box-shadow:0 10px 28px rgba(20,29,54,.14); }
 .detail-ticket-compact .flip-card-front>.card { border:0; background:transparent !important; box-shadow:none; }
-.ticket-overview { min-height:450px; padding:1.35rem; border-radius:15px; color:#fff; background:linear-gradient(145deg,#20285d 0%,#142039 100%); }
+.ticket-overview { min-height:450px; padding:1.35rem; border-radius:15px; color:#fff; background:var(--app-ticket-card,linear-gradient(145deg,#20285d 0%,#142039 100%)); transition:background .2s ease; }
 .ticket-overview__page-heading { margin:-.15rem 0 1.1rem; padding-bottom:1rem; border-bottom:1px solid rgba(255,255,255,.1); }
 .ticket-overview__page-heading h1 { margin:0 0 .25rem; color:#fff; font-size:1.25rem; font-weight:700; }
 .ticket-overview__page-heading p { margin:0; color:#aeb7d8; font-size:.75rem; }
