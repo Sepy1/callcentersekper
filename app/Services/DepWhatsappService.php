@@ -34,6 +34,8 @@ class DepWhatsappService
 
         Log::info('MAHADATA RES', ['status' => $response->status(), 'body' => $body ?? $response->body()]);
 
+        $response->throw();
+
         if (!is_array($body)) {
             return [
                 'status' => $response->status(),

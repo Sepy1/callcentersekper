@@ -4,9 +4,14 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Notifications\Events\NotificationSent;
+use Illuminate\Notifications\Events\NotificationFailed;
 use App\Models\Notification;
 use App\Models\Ticket;
 use App\Observers\TicketObserver;
+use App\Notifications\TicketCreatedNotification;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,6 +34,27 @@ class AppServiceProvider extends ServiceProvider
          * ======================================
          */
         Ticket::observe(TicketObserver::class);
+
+        Event::listen(NotificationSent::class, function (NotificationSent $event): void {
+            if ($event->channel === 'mail' && $event->notification instanceof TicketCreatedNotification) {
+                Log::info('TICKET EMAIL SENT', [
+                    'ticket_id' => $event->notification->ticketId(),
+                    'nomor_tiket' => $event->notification->ticketNumber(),
+                    'recipient_type' => $event->notification->recipientType(),
+                ]);
+            }
+        });
+
+        Event::listen(NotificationFailed::class, function (NotificationFailed $event): void {
+            if ($event->channel === 'mail' && $event->notification instanceof TicketCreatedNotification) {
+                Log::error('TICKET EMAIL FAILED', [
+                    'ticket_id' => $event->notification->ticketId(),
+                    'nomor_tiket' => $event->notification->ticketNumber(),
+                    'recipient_type' => $event->notification->recipientType(),
+                    'data' => $event->data,
+                ]);
+            }
+        });
 
         /**
          * ======================================

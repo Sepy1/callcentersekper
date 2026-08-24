@@ -28,10 +28,14 @@ class TicketObserver
                         $ticket->judul,
                         $ticket->kategori,
                         $ticket->created_at->format('d F Y'),
-                    ]
+                    ],
+                    $ticket->id
                 );
 
-                Log::info('WA OPEN QUEUED', ['ticket_id' => $ticket->id]);
+                Log::info('TICKET WHATSAPP QUEUED', [
+                    'ticket_id' => $ticket->id,
+                    'nomor_tiket' => $ticket->nomor_tiket,
+                ]);
             } catch (\Throwable $e) {
                 Log::error('WA OPEN QUEUE FAILED', [
                     'ticket_id' => $ticket->id,
@@ -80,7 +84,8 @@ class TicketObserver
                         $ticket->nomor_tiket,
                         optional($ticket->closing_at)->format('d F Y') ?? now()->format('d F Y'),
                         $ticket->closing_notes ?? '-',
-                    ]
+                    ],
+                    $ticket->id
                 );
 
                 Log::info('WA CLOSE QUEUED', ['ticket_id' => $ticket->id]);

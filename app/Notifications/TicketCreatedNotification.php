@@ -35,4 +35,19 @@ class TicketCreatedNotification extends Notification implements ShouldQueue
                     ->subject("Tiket baru: {$ticket->nomor_tiket}")
                     ->markdown('emails.tickets.created', ['ticket' => $ticket, 'recipientType' => $this->recipientType]);
     }
+
+    public function ticketId(): int
+    {
+        return (int) $this->ticket->id;
+    }
+
+    public function ticketNumber(): string
+    {
+        return (string) $this->ticket->nomor_tiket;
+    }
+
+    public function recipientType(): string
+    {
+        return (string) $this->recipientType;
+    }
 }

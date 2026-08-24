@@ -350,6 +350,13 @@ class TicketController extends Controller
         $ticket->detail = $request->input('detail');
         $ticket->save();
 
+        \Log::info('TICKET CREATED', [
+            'ticket_id' => $ticket->id,
+            'nomor_tiket' => $ticket->nomor_tiket,
+            'created_by' => auth()->id(),
+            'status' => $ticket->status,
+        ]);
+
         // log creation
         ActivityLog::create([
             'user_id' => auth()->id(),
@@ -377,6 +384,11 @@ class TicketController extends Controller
         try {
             if (!empty($ticket->email)) {
                 NotificationFacade::route('mail', $ticket->email)->notify(new TicketCreatedNotification($ticket, 'pelapor'));
+                \Log::info('TICKET EMAIL QUEUED', [
+                    'ticket_id' => $ticket->id,
+                    'nomor_tiket' => $ticket->nomor_tiket,
+                    'recipient_type' => 'pelapor',
+                ]);
             }
         } catch (\Throwable $e) {
             \Log::error('send ticket created email to pelapor failed: ' . $e->getMessage());

@@ -18,13 +18,15 @@ class SendWhatsappTemplate implements ShouldQueue
     public string $templateId;
     public string $language;
     public array $params;
+    public ?int $ticketId;
 
-    public function __construct(string $phone, string $templateId, string $language = 'id', array $params = [])
+    public function __construct(string $phone, string $templateId, string $language = 'id', array $params = [], ?int $ticketId = null)
     {
         $this->phone = $phone;
         $this->templateId = $templateId;
         $this->language = $language;
         $this->params = $params;
+        $this->ticketId = $ticketId;
         // put on notifications queue by default
         $this->onQueue('notifications');
     }
@@ -33,9 +35,18 @@ class SendWhatsappTemplate implements ShouldQueue
     {
         try {
             $dep->sendTemplateById($this->phone, $this->templateId, $this->language, $this->params);
-            Log::info('SendWhatsappTemplate: dispatched', ['phone' => $this->phone, 'template' => $this->templateId]);
+            Log::info('TICKET WHATSAPP SENT', [
+                'ticket_id' => $this->ticketId,
+                'template' => $this->templateId,
+                'phone_suffix' => substr($this->phone, -4),
+            ]);
         } catch (\Throwable $e) {
-            Log::error('SendWhatsappTemplate failed', ['err' => $e->getMessage(), 'phone' => $this->phone]);
+            Log::error('TICKET WHATSAPP FAILED', [
+                'ticket_id' => $this->ticketId,
+                'template' => $this->templateId,
+                'phone_suffix' => substr($this->phone, -4),
+                'error' => $e->getMessage(),
+            ]);
             // let the job fail and be retried according to worker settings
             throw $e;
         }
