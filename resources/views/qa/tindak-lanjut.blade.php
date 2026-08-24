@@ -110,6 +110,7 @@
 			}
 		}
 	</style>
+	@include('partials.followup-role-interface')
     {{-- Toast Success --}}
     @if(session('success'))
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
@@ -162,7 +163,7 @@
                         <div id="detail-tiket-card" class="mb-2">
                             <div class="row g-3 detail-top-row">
                                 <div class="col-md-6">
-                                    <div class="flip-card detail-ticket-compact" id="ticket-flip-qa" aria-pressed="false" role="button" tabindex="0" title="Klik untuk melihat informasi pelapor">
+                                    <div class="flip-card detail-ticket-compact" id="ticket-flip-qa" aria-pressed="false" role="button" tabindex="0" aria-label="Klik untuk melihat informasi pelapor">
                                         <div class="flip-card-inner">
                                             <div class="flip-card-front">
                                                 <div class="card h-100">
@@ -292,7 +293,8 @@
                         {{-- Compact: Summary QA | Update Status (two columns) --}}
                         <div class="row g-2 mb-3">
                             <div class="col-md-6">
-                                <div class="card h-100">
+                                <div class="card h-100 followup-role-action-card">
+                                    <div class="card-header"><span class="role-action-icon"><i class="fas fa-clipboard-list"></i></span><h6 class="mb-0">Summary QA</h6></div>
                                     <div class="card-body p-2">
                                         <form method="POST" action="{{ route('qa.tindak-lanjut') }}">
                                             @csrf
@@ -309,7 +311,8 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="card h-100">
+                                <div class="card h-100 followup-role-action-card">
+                                    <div class="card-header"><span class="role-action-icon"><i class="fas fa-clipboard-check"></i></span><h6 class="mb-0">Update Status Tiket</h6></div>
                                     <div class="card-body p-2">
                                         <form method="POST" action="{{ route('qa.tindak-lanjut') }}">
                                             @csrf
@@ -336,6 +339,9 @@
             </div>
         </div>
         <div class="col-12 col-xl-4 d-flex flex-column" style="gap: 1rem;">
+            @if(!empty($ticket))
+                @include('admin.partials.tindak-lanjut-summary', ['ticket' => $ticket])
+            @endif
             <div class="card followup-chat-card h-100 flex-fill" id="chat-card">
                 <div class="card-header pb-0 d-flex justify-content-between align-items-center">
                     <h6 class="mb-0">Chat Tindak Lanjut</h6>
@@ -365,7 +371,7 @@
                             <div id="chat-attachment-preview" class="mt-2 small text-muted"></div>
                         </div>
                     @else
-                        <div class="text-center text-muted">Cari tiket untuk mulai chat.</div>
+                        <div class="chat-role-empty"><i class="far fa-comments"></i><strong>Belum ada tiket dipilih</strong><span>Pilih tiket dari Daftar Tiket untuk mulai percakapan</span></div>
                     @endif
                 </div>
             </div>
@@ -386,6 +392,10 @@ document.addEventListener('DOMContentLoaded', function(){
 </script>
 @endpush
 </div>
+
+@if(!empty($ticket))
+    @include('partials.ticket-history-modal', ['ticket' => $ticket])
+@endif
 
 @if(session('success'))
 <script>
@@ -420,6 +430,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function render(msgs){
         messagesEl.innerHTML = '';
+        if (!msgs.length) {
+            messagesEl.innerHTML = '<div class="chat-role-empty"><i class="far fa-comments"></i><strong>Belum ada pesan</strong><span>Mulai percakapan untuk tindak lanjut tiket ini</span></div>';
+            return;
+        }
         msgs.forEach(m => {
             const wrap = document.createElement('div');
             wrap.style.display = 'flex';
@@ -440,7 +454,7 @@ document.addEventListener('DOMContentLoaded', function() {
             bubble.style.fontSize = '0.85rem';
             bubble.style.whiteSpace = 'pre-wrap';
             if(m.user_id === @json(auth()->id())){
-                bubble.style.background = '#0d6efd';
+                bubble.style.background = '#5b3fd3';
                 bubble.style.color = '#fff';
             } else {
                 bubble.style.background = '#e9ecef';

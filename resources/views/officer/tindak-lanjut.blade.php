@@ -138,6 +138,7 @@
 			}
 		}
 	</style>
+	@include('partials.followup-role-interface')
 
 	{{-- Toast --}}
 	@if(session('success') || session('error'))
@@ -189,7 +190,7 @@
 						<div id="detail-tiket-card" class="mb-2">
 							<div class="row g-3 detail-top-row">
 								<div class="col-md-6">
-									<div class="flip-card detail-ticket-compact" id="ticket-flip-officer" role="button" tabindex="0" title="Klik untuk melihat informasi pelapor">
+									<div class="flip-card detail-ticket-compact" id="ticket-flip-officer" role="button" tabindex="0" aria-label="Klik untuk melihat informasi pelapor">
 										<div class="flip-card-inner">
 											<div class="flip-card-front">
 												<div class="card h-100">
@@ -318,25 +319,29 @@
 									</div>
 								</div>
 							</div>
+						</div>
 
-							<div class="row" style="gap:1.5rem 0;">
+						<div class="row followup-role-action-row" style="gap:1.5rem 0;">
 								<div class="col-md-6 mb-3">
-									<div class="card flex-fill" style="max-height:360px; display:flex; flex-direction:column;">
-										<div class="card-header pb-0"><h6 class="mb-0">Isian Tindak Lanjut</h6></div>
+									<div class="card flex-fill followup-role-action-card" style="max-height:360px; display:flex; flex-direction:column;">
+										<div class="card-header pb-0"><span class="role-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m4 20 4.2-1 10.7-10.7a2.1 2.1 0 0 0-3-3L5.2 16 4 20Zm10.5-13.3 3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h6 class="mb-0">Isian Tindak Lanjut</h6></div>
 										<div class="card-body overflow-auto" style="flex:1 1 auto; min-height:0;">
 											<form method="POST" action="{{ route('officer.tindak-lanjut.proses') }}" enctype="multipart/form-data" autocomplete="off" id="tindak-form">
 												@csrf
 												<input type="hidden" name="nomor_tiket" value="{{ $ticket->nomor_tiket }}">
-												<div class="mb-3">
-													<textarea class="form-control" name="tindak_lanjut" rows="3" placeholder="Tulis tindak lanjut di sini..." {{ $functions_disabled ? 'readonly' : '' }}>{{ $pivot ? $pivot->tl : '' }}</textarea>
-												</div>
-												<div class="mb-2">
-													<label class="form-label small mb-1">Lampiran (opsional)</label>
-													<input type="file" name="lampiran" id="tindak-lanjut-lampiran" class="form-control form-control-sm" onchange="document.getElementById('tindak-lanjut-lampiran-preview').innerText = this.files && this.files[0] ? this.files[0].name : '';" {{ $functions_disabled ? 'disabled' : '' }}>
-													<div id="tindak-lanjut-lampiran-preview" class="small text-muted mt-1"></div>
-												</div>
-												<div class="d-flex justify-content-end">
-													<button type="submit" class="btn btn-sm btn-outline-primary" {{ $functions_disabled ? 'disabled' : '' }}>Simpan Tindak Lanjut</button>
+												<input type="hidden" name="form_action" value="save_followup">
+												<div class="row g-3 align-items-stretch officer-followup-form-row">
+													<div class="col-12 col-lg-7">
+														<textarea class="form-control h-100" name="tindak_lanjut" rows="4" aria-label="Tulis tindak lanjut" placeholder="Tulis tindak lanjut di sini..." {{ ($functions_disabled || ($pivot && $pivot->status === 'proses_qa')) ? 'readonly' : '' }}>{{ $pivot ? $pivot->tl : '' }}</textarea>
+													</div>
+													<div class="col-12 col-lg-5 d-flex flex-column officer-followup-side-column">
+														<div>
+															<label class="form-label small mb-1" for="tindak-lanjut-lampiran">Lampiran (opsional)</label>
+															<input type="file" name="lampiran" id="tindak-lanjut-lampiran" class="form-control form-control-sm" onchange="document.getElementById('tindak-lanjut-lampiran-preview').innerText = this.files && this.files[0] ? this.files[0].name : '';" {{ ($functions_disabled || ($pivot && $pivot->status === 'proses_qa')) ? 'disabled' : '' }}>
+															<div id="tindak-lanjut-lampiran-preview" class="small text-muted mt-1"></div>
+														</div>
+														<button type="submit" class="btn btn-sm btn-outline-primary w-100 mt-auto mb-0" {{ ($functions_disabled || ($pivot && $pivot->status === 'proses_qa')) ? 'disabled' : '' }}>Simpan Tindak Lanjut</button>
+													</div>
 												</div>
 											</form>
 										</div>
@@ -344,15 +349,15 @@
 								</div>
 
 								<div class="col-md-6 mb-3">
-									<div class="card flex-fill h-100">
-										<div class="card-header pb-0"><h6 class="mb-0">Update Status Tiket</h6></div>
+									<div class="card flex-fill h-100 followup-role-action-card">
+										<div class="card-header pb-0"><span class="role-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M9 5h6m-6 4h6m-8 6 2.5 2.5L17 10m-1-7h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h6 class="mb-0">Update Status Tiket</h6></div>
 										<div class="card-body">
 											<form method="POST" action="{{ route('officer.tindak-lanjut.proses') }}" class="d-flex flex-wrap gap-2 align-items-center" id="status-form">
 												@csrf
 												<input type="hidden" name="nomor_tiket" value="{{ $ticket->nomor_tiket }}">
 												<label class="mb-0 fw-bold">Status:</label>
-												<select class="form-select form-select-sm" name="status" style="min-width:140px;" {{ $functions_disabled ? 'disabled' : '' }}>
-													<option value="proses_qa" {{ ($pivot && $pivot->status == 'proses_qa') ? 'selected' : '' }}>Proses QA</option>
+												<select class="form-select form-select-sm" name="status" aria-label="Status officer" style="min-width:140px;" {{ $functions_disabled ? 'disabled' : '' }}>
+													<option value="proses_qa" {{ ($pivot && $pivot->status == 'proses_qa') ? 'selected disabled' : '' }}>Proses QA</option>
 													<option value="cancel_qa" {{ ($pivot && $pivot->status == 'cancel_qa') ? 'selected' : '' }}>Cancel QA</option>
 												</select>
 												<button type="submit" class="btn btn-sm btn-outline-success" {{ $functions_disabled ? 'disabled' : '' }}>Update Status</button>
@@ -360,7 +365,6 @@
 										</div>
 									</div>
 								</div>
-							</div>
 						</div>
 					@endif
 
@@ -384,6 +388,9 @@ document.addEventListener('DOMContentLoaded', function(){
 		</div>
 
 		<div class="col-12 col-xl-4 d-flex flex-column" style="gap:1rem;">
+			@if(!empty($ticket) && isset($assigned) && $assigned)
+				@include('admin.partials.tindak-lanjut-summary', ['ticket' => $ticket])
+			@endif
 			<div class="card followup-chat-card h-100 flex-fill" id="chat-card">
 				<div class="card-header pb-0 d-flex justify-content-between align-items-center"><h6 class="mb-0">Chat Tindak Lanjut</h6></div>
 				<div class="card-body p-2 d-flex flex-column" style="height:100%; box-sizing:border-box;">
@@ -410,13 +417,17 @@ document.addEventListener('DOMContentLoaded', function(){
 							<div id="chat-attachment-preview" class="mt-2 small text-muted"></div>
 						</div>
 					@else
-						<div class="text-center text-muted">Cari tiket untuk mulai chat.</div>
+						<div class="chat-role-empty"><i class="far fa-comments"></i><strong>Belum ada tiket dipilih</strong><span>Pilih tiket dari Daftar Tiket untuk mulai percakapan</span></div>
 					@endif
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
+
+@if(!empty($ticket) && isset($assigned) && $assigned)
+	@include('partials.ticket-history-modal', ['ticket' => $ticket])
+@endif
 
 @if(!empty($ticket))
 <script>
@@ -443,6 +454,10 @@ document.addEventListener('DOMContentLoaded', function(){
 
 	function render(msgs){
 		messagesEl.innerHTML = '';
+		if (!msgs.length) {
+			messagesEl.innerHTML = '<div class="chat-role-empty"><i class="far fa-comments"></i><strong>Belum ada pesan</strong><span>Mulai percakapan untuk tindak lanjut tiket ini</span></div>';
+			return;
+		}
 		msgs.forEach(m => {
 			const wrap = document.createElement('div');
 			wrap.style.display = 'flex';
@@ -463,7 +478,7 @@ document.addEventListener('DOMContentLoaded', function(){
 			bubble.style.fontSize = '0.85rem';
 			bubble.style.whiteSpace = 'pre-wrap';
 			if(m.user_id === @json(auth()->id())){
-				bubble.style.background = '#0d6efd';
+				bubble.style.background = '#5b3fd3';
 				bubble.style.color = '#fff';
 			} else {
 				bubble.style.background = '#e9ecef';

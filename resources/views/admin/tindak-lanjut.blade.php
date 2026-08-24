@@ -200,7 +200,12 @@ body { background:var(--app-background,var(--hd-bg)) !important; color:#202840; 
 .qa-panel,.closing-panel { border:0 !important; border-radius:10px !important; box-shadow:none !important; }.qa-panel{background:#ef7d20 !important}.closing-panel{background:#172235 !important}
 .followup-action-row { row-gap:1rem !important; }.followup-action-row>div{margin-bottom:0 !important}.followup-action-card>.card-body{padding:1rem 1.25rem}
 .section-title-icon { width:30px;height:30px;border-radius:9px;display:inline-grid;place-items:center;background:#eeeaff;color:var(--hd-primary);margin-right:.55rem; }
-.section-subtitle{display:block;color:var(--hd-muted);font-size:.7rem;font-weight:400;margin:.2rem 0 0 2.7rem}
+.section-title-icon svg { width:16px; height:16px; }
+.followup-action-card>.card-header { min-height:68px; display:flex; align-items:center; }
+.action-card-heading { display:flex; align-items:center; gap:.65rem; width:100%; }
+.action-card-heading .section-title-icon { flex:0 0 auto; margin:0; }
+.action-card-heading h6 { margin:0; line-height:1.2; }
+.section-subtitle{display:block;color:var(--hd-muted);font-size:.7rem;font-weight:500;margin:.22rem 0 0}
 .followup-action-card label { color:#46506b; font-size:.75rem; }.followup-action-card .form-control,.followup-action-card .form-select { min-height:43px;border-color:var(--hd-border);border-radius:9px;box-shadow:none}.followup-action-card .form-control:focus,.followup-action-card .form-select:focus{border-color:var(--hd-primary);box-shadow:0 0 0 3px rgba(91,63,211,.1)}
 .action-helper { color:var(--hd-muted);font-size:.7rem;margin:.4rem 0 .8rem}.btn-helpdesk-primary,.btn-helpdesk-success{border:0!important;border-radius:8px!important;color:#fff!important;font-weight:700;padding:.65rem 1.1rem!important;margin:0!important}.btn-helpdesk-primary{background:var(--hd-primary)!important}.btn-helpdesk-success{background:var(--hd-success)!important}
 .current-status-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem;color:#556078;font-size:.75rem}
@@ -221,6 +226,34 @@ body { background:var(--app-background,var(--hd-bg)) !important; color:#202840; 
 .officer-summary-item__attachment { display:flex; align-items:center; gap:.45rem; margin-top:.55rem; padding:.5rem .6rem; border-radius:7px; background:#f0edff; color:var(--hd-primary); font-size:.68rem; text-decoration:none; }
 .officer-summary-item__attachment span { min-width:0; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .officer-summary-empty { display:flex; align-items:center; justify-content:center; gap:.5rem; padding:.9rem; color:var(--hd-muted); font-size:.7rem; }
+/* Typography: clearer and more assertive across the follow-up page */
+.followup-page { font-size:14px; font-weight:500; }
+.followup-page h1,.followup-page h2,.followup-page h3,.followup-page h4,.followup-page h5,.followup-page h6 { font-weight:700!important; letter-spacing:-.01em; }
+.ticket-overview__page-heading h1 { font-size:1.4rem; font-weight:800!important; }
+.ticket-overview__page-heading p { font-size:.82rem; font-weight:600; color:#c3cae0; }
+.ticket-overview__eyebrow { font-size:.74rem; font-weight:700; color:#c1c9e2; }
+.ticket-overview h2 { font-size:1.35rem; font-weight:800!important; }
+.ticket-field span:not(.officer-name) { font-size:.75rem; font-weight:600; color:#c1c9df; }
+.ticket-field strong { font-size:.9rem; font-weight:700; line-height:1.5; }
+.ticket-overview__hint { font-size:.72rem; font-weight:600; color:#adb7d3; }
+.status-pill { font-size:.68rem; font-weight:800; }
+.followup-action-card>.card-header h6,.followup-chat-card>.card-header h6 { font-size:1rem; font-weight:700!important; }
+.section-subtitle { font-size:.74rem; font-weight:500; color:#6f7890; }
+.followup-action-card label,.current-status-row { font-size:.8rem; font-weight:700; color:#3f4962; }
+.followup-action-card .form-control,.followup-action-card .form-select { font-size:.84rem; font-weight:600; color:#30384d; }
+.action-helper { font-size:.74rem; font-weight:500; color:#68728a; }
+.btn-helpdesk-primary,.btn-helpdesk-success { font-size:.78rem; font-weight:800; }
+.chat-ticket-summary__eyebrow { font-size:.66rem; font-weight:800; }
+.chat-ticket-summary__header h6 { font-size:.88rem; font-weight:700!important; }
+.chat-ticket-summary__body,.chat-ticket-summary__body .small { font-size:.75rem!important; font-weight:500; line-height:1.5; }
+.chat-ticket-summary .qa-panel .fw-semibold,.chat-ticket-summary .closing-panel .fw-semibold { font-size:.78rem!important; font-weight:700!important; }
+.officer-summary-item__top { font-size:.78rem; }.officer-summary-item__top strong{font-weight:700}
+.officer-summary-item__tl span { font-size:.64rem; font-weight:700; }.officer-summary-item__tl p { font-size:.74rem; font-weight:500; color:#414b61; }
+.officer-summary-item__attachment { font-size:.72rem; font-weight:700; }
+.chat-message-surface,.chat-message-surface>div { font-weight:500; }
+.chat-controls .form-control { font-size:.84rem!important; font-weight:500; color:#30384d; }
+.flip-card-back,.flip-card-back .small { font-size:.8rem!important; font-weight:500; line-height:1.5; }
+#ticket-history-modal .modal-title { font-weight:800; }#ticket-history-modal .timeline-card { font-size:.84rem; font-weight:500; }
 @media(min-width:1200px){
     html,body.helpdesk-followup { height:100%; overflow:hidden; }
     body.helpdesk-followup .main-content { height:100vh; margin-top:0!important; overflow:hidden; }
@@ -354,17 +387,20 @@ body { background:var(--app-background,var(--hd-bg)) !important; color:#202840; 
                             <div class="col-12 col-md-6 mb-3">
                                 <div class="card flex-fill h-100 followup-action-card">
                                     <div class="card-header pb-0">
-                                        <h6 class="mb-0"><span class="section-title-icon"><i class="fas fa-user-plus"></i></span>Assign Officer <small class="section-subtitle">Multi assign dengan mention</small></h6>
+                                        <div class="action-card-heading">
+                                            <span class="section-title-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M15 19a6 6 0 0 0-12 0M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm9-3v6m3-3h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                                            <div><h6>Assign Officer</h6><small class="section-subtitle">Multi assign dengan mention</small></div>
+                                        </div>
                                     </div>
                                     <div class="card-body">
                                         <form method="POST" action="{{ route('admin.tindak-lanjut') }}" id="assign-officer-form" class="mb-3" @if($functions_disabled) aria-disabled="true" @endif>
                                             @csrf
                                             <input type="hidden" name="nomor_tiket" value="{{ $ticket->nomor_tiket }}">
                                             <div class="mb-3">
-                                                <label class="fw-bold mb-1" for="officer-mention">Assign ke Officer</label>
                                                 <input type="text"
                                                     id="officer-mention"
                                                     class="form-control"
+                                                    aria-label="Pilih officer"
                                                     placeholder="Ketik nama officer, gunakan @ untuk mention, bisa lebih dari satu"
                                                     autocomplete="off"
                                                     {{ $functions_disabled ? 'disabled' : '' }}
@@ -372,7 +408,6 @@ body { background:var(--app-background,var(--hd-bg)) !important; color:#202840; 
                                                 <div id="officer-suggestions" class="list-group position-absolute" style="z-index: 10; max-height: 200px; overflow-y: auto; display:none;"></div>
                                                 <div id="officer-tags" class="mt-2"></div>
                                                 <input type="hidden" name="officer_ids" id="officer-ids">
-                                                <div class="action-helper">Gunakan @nama untuk mention officer lainnya</div>
                                             </div>
                                             <button type="submit" class="btn btn-sm btn-helpdesk-primary" {{ $functions_disabled ? 'disabled' : '' }}><i class="fas fa-user-plus me-1"></i> Assign Officer</button>
                                         </form>
@@ -382,15 +417,16 @@ body { background:var(--app-background,var(--hd-bg)) !important; color:#202840; 
                             <div class="col-12 col-md-6 mb-3">
                                 <div class="card flex-fill h-100 followup-action-card">
                                     <div class="card-header pb-0">
-                                        <h6 class="mb-0"><span class="section-title-icon"><i class="fas fa-clipboard-check"></i></span>Update Status Tiket</h6>
+                                        <div class="action-card-heading">
+                                            <span class="section-title-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M9 5h6m-6 4h6m-8 6 2.5 2.5L17 10m-1-7h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                                            <div><h6>Update Status Tiket</h6><small class="section-subtitle" aria-hidden="true">&nbsp;</small></div>
+                                        </div>
                                     </div>
                                     <div class="card-body">
                                         <form method="POST" action="{{ route('admin.tindak-lanjut') }}" id="admin-status-form" @if($functions_disabled) aria-disabled="true" @endif>
                                             @csrf
                                             <input type="hidden" name="nomor_tiket" value="{{ $ticket->nomor_tiket }}">
-                                            <div class="current-status-row">Status Saat Ini <span class="status-pill status-pill--{{ $ticket->status }}">{{ str_replace('_', ' ', $ticket->status) }}</span></div>
-                                            <label class="mb-1 fw-bold" for="admin-status-select">Ubah Status</label>
-                                            <select class="form-select form-select-sm mb-3" name="status" id="admin-status-select" {{ $functions_disabled ? 'disabled' : '' }}>
+                                            <select class="form-select form-select-sm mb-3" name="status" id="admin-status-select" aria-label="Pilih status tiket" {{ $functions_disabled ? 'disabled' : '' }}>
                                                 <option value="open" {{ $ticket->status == 'open' ? 'selected' : '' }}>Open</option>
                                                 <option value="in_progress" {{ $ticket->status == 'in_progress' ? 'selected' : '' }}>On Progress</option>
                                                 <option value="closed" {{ $ticket->status == 'closed' ? 'selected' : '' }}>Closed</option>

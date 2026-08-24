@@ -42,10 +42,16 @@ class TindakLanjutController extends Controller
 
 		$officerId = auth()->id();
 		$now = now();
+		$savedFollowup = false;
 
 		// Update tindak_lanjut (pivot tl + optional lampiran)
-		if ($request->filled('tindak_lanjut') || $request->hasFile('lampiran')) {
-			$update = [];
+		if ($request->input('form_action') === 'save_followup' || $request->filled('tindak_lanjut') || $request->hasFile('lampiran')) {
+			$oldOfficerStatus = DB::table('ticket_officer')
+				->where('ticket_id', $ticket->id)
+				->where('officer_id', $officerId)
+				->value('status');
+
+			$update = ['status' => 'proses_qa'];
 			if ($request->filled('tindak_lanjut')) {
 				$update['tl'] = $request->input('tindak_lanjut');
 			}
@@ -61,6 +67,7 @@ class TindakLanjutController extends Controller
 				->where('ticket_id', $ticket->id)
 				->where('officer_id', $officerId)
 				->update($update);
+			$savedFollowup = true;
 
 			ActivityLog::create([
 				'user_id' => $officerId,
@@ -69,6 +76,16 @@ class TindakLanjutController extends Controller
 				'detail' => 'Officer wrote tindak_lanjut' . ($update['lampiran'] ?? '') . (isset($update['tl']) ? ' — ' . Str::limit($update['tl'], 300) : ''),
 				'ip' => $request->ip(),
 			]);
+
+			if ($oldOfficerStatus !== 'proses_qa') {
+				ActivityLog::create([
+					'user_id' => $officerId,
+					'ticket_id' => $ticket->id,
+					'action' => 'officer_status_changed',
+					'detail' => "Officer status: {$oldOfficerStatus} -> proses_qa (otomatis setelah menyimpan tindak lanjut)",
+					'ip' => $request->ip(),
+				]);
+			}
 		}
 
 		// Update pivot status (officer status change)
@@ -105,6 +122,10 @@ class TindakLanjutController extends Controller
 			\Illuminate\Support\Facades\Log::error('TindakLanjutController::proses notifyQa error', ['err' => $e->getMessage()]);
 		}
 
-		return back()->with('success', 'Tindak lanjut berhasil disimpan.');
+		$message = $savedFollowup
+			? 'Tindak lanjut berhasil disimpan dan status diperbarui ke Proses QA.'
+			: 'Status berhasil diperbarui.';
+
+		return back()->with('success', $message);
 	}
 }

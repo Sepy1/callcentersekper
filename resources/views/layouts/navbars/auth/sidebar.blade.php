@@ -211,6 +211,8 @@
     #sidenav-main .navbar-brand span,#sidenav-main .sidebar-user .fw-bold { color:var(--app-sidebar-text,#344767)!important; }
     #sidenav-main .navbar-nav .nav-link:not(.active) { color:var(--app-sidebar-text,#67748e)!important; }
     #sidenav-main .navbar-nav .nav-link.active,#sidenav-main .navbar-nav .nav-link.active.bg-gradient-warning { background:var(--app-sidebar-active,linear-gradient(180deg,#ffd56b 0%,#ff9a2a 100%))!important; }
+    #sidenav-main .navbar-nav .nav-link .icon { background:var(--app-sidebar-icon-bg,#fff)!important; transition:background-color .2s ease; }
+    #sidenav-main .navbar-nav .nav-link.active .icon { background:var(--app-sidebar-active-icon-bg,rgba(255,255,255,.18))!important; }
     #sidenav-main .navbar-nav .nav-link:not(.active) .icon i { color:var(--app-sidebar-icon,#344767)!important; opacity:1!important; }
     #sidenav-main .appearance-menu-logo { color:var(--app-sidebar-icon,#344767); transition:color .2s ease; }
     #sidenav-main .sidebar-user a[href*="/logout"] { color:var(--app-sidebar-text,#67748e)!important; opacity:.72; transition:opacity .18s ease,color .2s ease; }
@@ -226,17 +228,17 @@
   <script>
     (function(){
       const themes = {
-        default:{sidebar:'#ffffff',active:'linear-gradient(180deg,#ffd56b 0%,#ff9a2a 100%)',icon:'#344767',text:'#67748e',heading:'#344767',divider:'rgba(0,0,0,.12)',background:'#f8f9fa'},
-        indigo:{sidebar:'#241b5c',active:'#6d4aff',icon:'#b8adff',text:'#d9d5f2',heading:'#ffffff',divider:'rgba(255,255,255,.14)',background:'#f1effb'},
-        navy:{sidebar:'#12213d',active:'#2584e8',icon:'#80bfff',text:'#d1dbea',heading:'#ffffff',divider:'rgba(255,255,255,.14)',background:'#edf3f8'},
-        emerald:{sidebar:'#113d35',active:'#24b47e',icon:'#71dfbb',text:'#d2eee5',heading:'#ffffff',divider:'rgba(255,255,255,.14)',background:'#edf7f3'},
-        rose:{sidebar:'#4c1930',active:'#e44f87',icon:'#f4a6c2',text:'#f1d6e0',heading:'#ffffff',divider:'rgba(255,255,255,.14)',background:'#fbf0f4'},
-        amber:{sidebar:'#4a3212',active:'#f59e0b',icon:'#f8cf72',text:'#f4e4c5',heading:'#ffffff',divider:'rgba(255,255,255,.14)',background:'#fbf6e9'},
-        cyan:{sidebar:'#103b46',active:'#16a6c7',icon:'#76d7e9',text:'#d0ebf0',heading:'#ffffff',divider:'rgba(255,255,255,.14)',background:'#edf8fa'}
+        default:{sidebar:'#ffffff',active:'linear-gradient(180deg,#ffd56b 0%,#ff9a2a 100%)',icon:'#344767',iconBg:'#f5f6f8',activeIconBg:'rgba(255,255,255,.24)',text:'#67748e',heading:'#344767',divider:'rgba(0,0,0,.12)',background:'#f8f9fa'},
+        indigo:{sidebar:'#241b5c',active:'#6d4aff',icon:'#b8adff',iconBg:'rgba(184,173,255,.12)',activeIconBg:'rgba(255,255,255,.18)',text:'#d9d5f2',heading:'#ffffff',divider:'rgba(255,255,255,.14)',background:'#f1effb'},
+        navy:{sidebar:'#12213d',active:'#2584e8',icon:'#80bfff',iconBg:'rgba(128,191,255,.12)',activeIconBg:'rgba(255,255,255,.18)',text:'#d1dbea',heading:'#ffffff',divider:'rgba(255,255,255,.14)',background:'#edf3f8'},
+        emerald:{sidebar:'#113d35',active:'#24b47e',icon:'#71dfbb',iconBg:'rgba(113,223,187,.12)',activeIconBg:'rgba(255,255,255,.18)',text:'#d2eee5',heading:'#ffffff',divider:'rgba(255,255,255,.14)',background:'#edf7f3'},
+        rose:{sidebar:'#4c1930',active:'#e44f87',icon:'#f4a6c2',iconBg:'rgba(244,166,194,.12)',activeIconBg:'rgba(255,255,255,.18)',text:'#f1d6e0',heading:'#ffffff',divider:'rgba(255,255,255,.14)',background:'#fbf0f4'},
+        amber:{sidebar:'#4a3212',active:'#f59e0b',icon:'#f8cf72',iconBg:'rgba(248,207,114,.12)',activeIconBg:'rgba(255,255,255,.2)',text:'#f4e4c5',heading:'#ffffff',divider:'rgba(255,255,255,.14)',background:'#fbf6e9'},
+        cyan:{sidebar:'#103b46',active:'#16a6c7',icon:'#76d7e9',iconBg:'rgba(118,215,233,.12)',activeIconBg:'rgba(255,255,255,.18)',text:'#d0ebf0',heading:'#ffffff',divider:'rgba(255,255,255,.14)',background:'#edf8fa'}
       };
       function applyTheme(name){
         const selected=themes[name]||themes.default, root=document.documentElement;
-        root.style.setProperty('--app-sidebar',selected.sidebar);root.style.setProperty('--app-sidebar-active',selected.active);root.style.setProperty('--app-sidebar-icon',selected.icon);root.style.setProperty('--app-sidebar-text',selected.text);root.style.setProperty('--app-sidebar-divider',selected.divider);root.style.setProperty('--app-background',selected.background);
+        root.style.setProperty('--app-sidebar',selected.sidebar);root.style.setProperty('--app-sidebar-active',selected.active);root.style.setProperty('--app-sidebar-icon',selected.icon);root.style.setProperty('--app-sidebar-icon-bg',selected.iconBg);root.style.setProperty('--app-sidebar-active-icon-bg',selected.activeIconBg);root.style.setProperty('--app-sidebar-text',selected.text);root.style.setProperty('--app-sidebar-divider',selected.divider);root.style.setProperty('--app-background',selected.background);
         document.querySelectorAll('#sidenav-main .navbar-brand span,#sidenav-main .sidebar-user .fw-bold').forEach(el=>el.style.setProperty('color',selected.heading,'important'));
         document.querySelectorAll('.appearance-theme-option').forEach(el=>el.classList.toggle('is-active',el.dataset.theme===name));
         try{localStorage.setItem('callcenter-theme',name)}catch(e){}
