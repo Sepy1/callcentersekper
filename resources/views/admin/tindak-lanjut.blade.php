@@ -151,21 +151,97 @@
 .detail-ticket-compact .flip-card-back .mt-2 { margin-top: 0.35rem !important; }
 .detail-ticket-compact .flip-card-back .mt-3 { margin-top: 0.45rem !important; }
 
-.officer-compact-card {
-    height: 320px;
-    min-height: 320px;
-}
-
-.officer-compact-body {
-    overflow-y: auto;
-}
-
 @media (min-width: 1200px) {
     .followup-chat-card {
         position: sticky;
         top: 1rem;
     }
 }
+
+/* Enterprise helpdesk redesign */
+:root { --hd-primary:#5b3fd3; --hd-primary-dark:#4327b9; --hd-navy:#17213b; --hd-bg:#f7f8fc; --hd-border:#e7e9f0; --hd-muted:#77809a; --hd-success:#36b765; }
+body { background:var(--app-background,var(--hd-bg)) !important; color:#202840; }
+.followup-page { max-width:1800px; margin:0 auto; padding:0 1rem 1.5rem !important; }
+.helpdesk-page-header { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin:-1rem -1rem 1.25rem; padding:1.15rem 1.25rem; background:#fff; border-bottom:1px solid var(--hd-border); }
+.helpdesk-page-title { display:flex; align-items:center; gap:.9rem; }
+.helpdesk-menu-button { width:42px; height:42px; border:1px solid var(--hd-border); border-radius:10px; background:#fff; color:#313950; box-shadow:0 3px 12px rgba(27,37,63,.05); }
+.helpdesk-page-title h1 { font-size:1.45rem; margin:0 0 .2rem; color:#171d34; font-weight:700; }
+.helpdesk-page-title p { margin:0; color:var(--hd-muted); font-size:.86rem; }
+.helpdesk-user { display:flex; align-items:center; gap:.7rem; }
+.helpdesk-avatar { width:40px; height:40px; border-radius:50%; display:grid; place-items:center; background:var(--hd-primary); color:#fff; font-weight:700; }
+.helpdesk-user strong,.helpdesk-user small { display:block; line-height:1.25; }.helpdesk-user small{color:var(--hd-muted)}
+.followup-layout-row { --bs-gutter-x:1.25rem; }
+.followup-main-card { background:transparent; box-shadow:none; }
+.followup-main-card>.card-header { display:none; }
+.followup-main-card>.card-body { padding:0; gap:1rem !important; }
+.detail-top-row>div,.followup-action-row>div { display:flex; }
+.detail-ticket-compact { width:100%; height:450px; min-height:450px; }
+.detail-ticket-compact { border-radius:15px; box-shadow:0 10px 28px rgba(20,29,54,.14); }
+.detail-ticket-compact .flip-card-front>.card { border:0; background:transparent !important; box-shadow:none; }
+.ticket-overview { min-height:450px; padding:1.35rem; border-radius:15px; color:#fff; background:linear-gradient(145deg,#20285d 0%,#142039 100%); }
+.ticket-overview__page-heading { margin:-.15rem 0 1.1rem; padding-bottom:1rem; border-bottom:1px solid rgba(255,255,255,.1); }
+.ticket-overview__page-heading h1 { margin:0 0 .25rem; color:#fff; font-size:1.25rem; font-weight:700; }
+.ticket-overview__page-heading p { margin:0; color:#aeb7d8; font-size:.75rem; }
+.ticket-overview__header { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; margin-bottom:1.25rem; }
+.ticket-overview__actions { display:flex; align-items:center; gap:.55rem; }
+.ticket-history-button { display:inline-flex; align-items:center; gap:.4rem; padding:.38rem .65rem; border:1px solid rgba(255,255,255,.24); border-radius:7px; background:rgba(255,255,255,.08); color:#fff; font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:.03em; transition:.18s ease; }
+.ticket-history-button:hover,.ticket-history-button:focus { background:#fff; color:var(--hd-primary); outline:none; }
+.ticket-overview__eyebrow { display:block; color:#aeb7d8; font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; margin-bottom:.35rem; }
+.ticket-overview h2 { color:#fff; font-size:1.25rem; margin:0; }.status-pill { display:inline-flex; padding:.38rem .65rem; border-radius:7px; font-size:.65rem; font-weight:800; text-transform:uppercase; letter-spacing:.04em; background:#65708d; color:#fff; }
+.status-pill--open,.status-pill--in_progress { background:var(--hd-success); }.status-pill--rejected{background:#ef4444}
+.ticket-overview__grid { display:grid; grid-template-columns:1.15fr 1.45fr 1.15fr 1fr .8fr; gap:1rem; }
+.ticket-field span:not(.officer-name) { display:block; color:#aeb7d8; font-size:.7rem; margin-bottom:.25rem; }.ticket-field strong { display:block; color:#fff; font-size:.82rem; line-height:1.45; font-weight:600; }
+.ticket-field--wide { margin-bottom:.58rem; }.ticket-overview__divider { height:1px; margin:.9rem 0; background:rgba(255,255,255,.1); }.ticket-whatsapp{color:#48d67a;margin-left:.35rem}.officer-name{display:inline-block;margin:0 .3rem .2rem 0}.officer-name.is-complete{color:#69dd8e}
+.ticket-overview__hint { color:#929dbc; font-size:.65rem; margin-top:.8rem; }.ticket-overview__hint i{margin-right:.35rem}
+.flip-card-back { padding:1.35rem; border:1px solid var(--hd-border); border-radius:15px; background:#fff !important; color:#30384e; box-shadow:0 8px 24px rgba(21,31,53,.08); }
+.followup-action-card,.followup-chat-card { border:1px solid var(--hd-border); border-radius:15px; box-shadow:0 6px 22px rgba(26,33,56,.05); overflow:hidden; }
+.followup-action-card>.card-header,.followup-chat-card>.card-header { padding:1.15rem 1.25rem; border-bottom:1px solid var(--hd-border); background:#fff; }
+.followup-action-card>.card-header h6,.followup-chat-card>.card-header h6 { color:#28356b; font-size:.95rem; }
+.qa-panel,.closing-panel { border:0 !important; border-radius:10px !important; box-shadow:none !important; }.qa-panel{background:#ef7d20 !important}.closing-panel{background:#172235 !important}
+.followup-action-row { row-gap:1rem !important; }.followup-action-row>div{margin-bottom:0 !important}.followup-action-card>.card-body{padding:1rem 1.25rem}
+.section-title-icon { width:30px;height:30px;border-radius:9px;display:inline-grid;place-items:center;background:#eeeaff;color:var(--hd-primary);margin-right:.55rem; }
+.section-subtitle{display:block;color:var(--hd-muted);font-size:.7rem;font-weight:400;margin:.2rem 0 0 2.7rem}
+.followup-action-card label { color:#46506b; font-size:.75rem; }.followup-action-card .form-control,.followup-action-card .form-select { min-height:43px;border-color:var(--hd-border);border-radius:9px;box-shadow:none}.followup-action-card .form-control:focus,.followup-action-card .form-select:focus{border-color:var(--hd-primary);box-shadow:0 0 0 3px rgba(91,63,211,.1)}
+.action-helper { color:var(--hd-muted);font-size:.7rem;margin:.4rem 0 .8rem}.btn-helpdesk-primary,.btn-helpdesk-success{border:0!important;border-radius:8px!important;color:#fff!important;font-weight:700;padding:.65rem 1.1rem!important;margin:0!important}.btn-helpdesk-primary{background:var(--hd-primary)!important}.btn-helpdesk-success{background:var(--hd-success)!important}
+.current-status-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem;color:#556078;font-size:.75rem}
+.followup-chat-card { min-height:0; background:#fff; }.chat-online{padding:.35rem .65rem;border-radius:99px;background:#e4f8e9;color:#26934c;font-size:.68rem;font-weight:700}.followup-chat-card>.card-body{padding:0!important}.chat-message-surface{background:#fbfbfd!important;border-radius:0!important;padding:1rem!important}.chat-empty-state{margin:auto;text-align:center;padding:2rem;color:var(--hd-muted)}.chat-empty-icon{width:82px;height:82px;border-radius:50%;display:grid;place-items:center;margin:0 auto 1rem;background:#f0edff;color:var(--hd-primary);font-size:2rem}.chat-empty-state strong{display:block;color:#20263b;font-size:1rem;margin-bottom:.35rem}.chat-controls{padding:.9rem 1rem!important;margin:0!important;background:#fff}.chat-controls .form-control{height:44px!important;border-color:var(--hd-border);font-size:.82rem!important}.chat-controls .btn{width:44px!important;height:44px!important;margin:0!important}.chat-controls #btn-send{background:var(--hd-primary);border-color:var(--hd-primary)}
+.chat-ticket-summary { flex:0 0 auto; margin:0; border:1px solid var(--hd-border); border-radius:15px; background:#f8f9fc; box-shadow:0 6px 22px rgba(26,33,56,.05); overflow:hidden; }
+.chat-ticket-summary__header { display:flex; align-items:center; justify-content:space-between; gap:.75rem; padding:.85rem .9rem; background:#fff; border-bottom:1px solid var(--hd-border); }
+.chat-ticket-summary__eyebrow { display:block; margin-bottom:.15rem; color:var(--hd-primary); font-size:.62rem; font-weight:800; text-transform:uppercase; letter-spacing:.07em; }
+.chat-ticket-summary__header h6 { margin:0; color:#28356b; font-size:.82rem; }
+.chat-ticket-summary__body { max-height:285px; padding:.75rem; overflow-y:auto; }
+.chat-ticket-summary .qa-panel,.chat-ticket-summary .closing-panel { color:#fff; }
+.chat-ticket-summary__officers { display:flex; flex-direction:column; gap:.55rem; }
+.officer-summary-item { padding:.7rem; border:1px solid var(--hd-border); border-radius:9px; background:#fff; }
+.officer-summary-item__top { display:flex; align-items:center; justify-content:space-between; gap:.5rem; color:#28324b; font-size:.74rem; }
+.officer-summary-item__top .badge { font-size:.56rem; text-transform:capitalize; }
+.officer-summary-item__tl { margin-top:.55rem; padding-top:.5rem; border-top:1px solid #eef0f5; }
+.officer-summary-item__tl span { color:var(--hd-muted); font-size:.6rem; text-transform:uppercase; letter-spacing:.04em; }
+.officer-summary-item__tl p { margin:.15rem 0 0; color:#4b556b; font-size:.7rem; line-height:1.45; }
+.officer-summary-item__attachment { display:flex; align-items:center; gap:.45rem; margin-top:.55rem; padding:.5rem .6rem; border-radius:7px; background:#f0edff; color:var(--hd-primary); font-size:.68rem; text-decoration:none; }
+.officer-summary-item__attachment span { min-width:0; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.officer-summary-empty { display:flex; align-items:center; justify-content:center; gap:.5rem; padding:.9rem; color:var(--hd-muted); font-size:.7rem; }
+@media(min-width:1200px){
+    html,body.helpdesk-followup { height:100%; overflow:hidden; }
+    body.helpdesk-followup .main-content { height:100vh; margin-top:0!important; overflow:hidden; }
+    body.helpdesk-followup .main-content>.container-fluid.py-4 { height:100%; padding:12px!important; overflow:hidden; }
+    .followup-page { height:100%; padding:0!important; overflow:hidden; }
+    .followup-layout-row { height:100%; margin-top:0; margin-bottom:0; overflow:hidden; }
+    .followup-layout-row>.col-xl-8,.followup-layout-row>.col-xl-4 { height:100%; min-height:0; overflow:hidden; }
+    .followup-main-card { height:100%!important; min-height:0; }
+    .followup-main-card>.card-body { display:grid!important; grid-template-rows:minmax(0,1fr) auto; min-height:0; overflow:hidden; }
+    #detail-tiket-card,.detail-top-row,.detail-top-row>div { height:100%; min-height:0; margin-bottom:0!important; }
+    .detail-ticket-compact { height:100%!important; min-height:0!important; }
+    .detail-ticket-compact .flip-card-inner { height:100%; min-height:0!important; }
+    .followup-action-row { flex:0 0 auto; margin-top:0; }
+    .followup-layout-row>.col-xl-4 { display:flex; flex-direction:column; gap:1rem!important; }
+    .chat-ticket-summary { max-height:42%; min-height:0; }
+    .chat-ticket-summary__body { max-height:calc(42vh - 70px); }
+    .followup-chat-card { position:relative; top:auto; height:auto!important; min-height:0; flex:1 1 0!important; }
+    #chat-messages-wrapper { min-height:0; overflow:hidden; }
+}
+@media(max-width:991.98px){.ticket-overview__grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:767.98px){.followup-page{padding-inline:.5rem!important}.ticket-overview__grid{grid-template-columns:1fr 1fr}.detail-ticket-compact{height:470px;min-height:470px}.followup-chat-card{min-height:620px}}
 </style>
 
 
@@ -230,38 +306,12 @@
                     <h6 class="mb-0">Tindak Lanjut Tiket</h6>
                 </div>
                 <div class="card-body d-flex flex-column" style="gap: 1.5rem;">
-                    {{-- Filter Nomor Tiket --}}
-                    <form id="filter-tiket-form" class="d-flex gap-2 align-items-center mb-4"
-                          method="GET"
-                          action="{{ route('admin.tindak-lanjut') }}">
-                        <div class="input-group input-group-sm border" style="max-width:300px;">
-                            <span class="input-group-text bg-white border-0">
-                                <i class="fas fa-search text-secondary"></i>
-                            </span>
-                            <input
-                                type="text"
-                                id="nomor_tiket"
-                                name="nomor_tiket"
-                                value="{{ request('nomor_tiket') }}"
-                                class="form-control border-0"
-                                placeholder="Cari nomor tiket...">
-                        </div>
-                        <button type="submit" class="btn btn-sm bg-gradient-primary rounded-pill px-3 mb-0">
-                            Cari
-                        </button>
-                        @if(request('nomor_tiket'))
-                        <a href="{{ route('admin.tindak-lanjut') }}" class="btn btn-sm bg-gradient-primary rounded-pill px-3 mb-0">
-                            Reset
-                        </a>
-                        @endif
-                    </form>
-
                     {{-- Card Detail Tiket: split into info (left) and officer list (right) --}}
                     @if(!empty($ticket))
                         @php $functions_disabled = in_array($ticket->status, ['closed','rejected']); @endphp
                         <div id="detail-tiket-card" class="mb-2">
                             <div class="row g-3 detail-top-row">
-                                <div class="col-md-6">
+                                <div class="col-12">
                                     <div class="flip-card detail-ticket-compact" id="ticket-flip" aria-pressed="false" role="button" tabindex="0" title="Klik untuk melihat informasi pelapor">
                                         <div class="flip-card-inner">
                                             <div class="flip-card-front">
@@ -297,98 +347,21 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="card h-100 officer-compact-card">
-                                        <div class="card-header pb-0 d-flex justify-content-between align-items-center">
-                                            <h6 class="mb-0">Officer Tertugaskan (TL & Lampiran)</h6>
-                                            <div>
-                                                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#ticket-history-modal" id="btn-history">
-                                                    <i class="fas fa-history me-1"></i>History
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="card-body p-2 officer-compact-body">
-                                            {{-- QA Summary (highlight orange) --}}
-                                            <div class="card mb-2" style="background:#ff7a00;color:#fff;">
-                                                <div class="card-body p-2">
-                                                    <div class="fw-semibold small mb-1">QA Summary</div>
-                                                    <div class="small">{!! nl2br(e($ticket->qa_summary ?? '-')) !!}</div>
-                                                </div>
-                                            </div>
-
-                                            {{-- Closing Notes (red) --}}
-                                            <div class="card mb-2" style="background:#000;color:#fff;">
-                                                <div class="card-body p-2">
-                                                    <div class="fw-semibold small mb-1">
-                                                        Closing Notes
-                                                        @if(!empty($ticket->closing_at))
-                                                            <span class="small text-white-50">({{ \Illuminate\Support\Carbon::parse($ticket->closing_at)->format('Y-m-d H:i') }})</span>
-                                                        @endif
-                                                    </div>
-                                                    <div class="small">{!! nl2br(e($ticket->closing_notes ?? '-')) !!}</div>
-                                                </div>
-                                            </div>
-                                            @php
-                                                $assignedOfficers = \DB::table('ticket_officer')
-                                                    ->where('ticket_id', $ticket->id)
-                                                    ->orderBy('created_at')
-                                                    ->get();
-                                            @endphp
-                                            @if($assignedOfficers->isNotEmpty())
-                                                <div class="row g-2">
-                                                    @foreach($assignedOfficers as $ao)
-                                                        @php
-                                                            $officer = \App\Models\User::find($ao->officer_id);
-                                                            $lampiran = $ao->lampiran ?? null;
-                                                        @endphp
-                                                        <div class="col-12">
-                                                            <div class="card mb-2">
-                                                                <div class="card-body p-2 d-flex justify-content-between align-items-start">
-                                                                    <div>
-                                                                        <div class="fw-semibold">{{ $officer ? $officer->name : $ao->officer_id }}</div>
-                                                                        @if(!empty($ao->tl))
-                                                                            <div class="small text-muted mt-1">{{ $ao->tl }}</div>
-                                                                        @endif
-                                                                        @if($lampiran)
-                                                                            <div class="mt-1">
-                                                                                <a href="{{ asset('storage/'.$lampiran) }}" target="_blank" class="small text-decoration-none">
-                                                                                    {{ \Illuminate\Support\Str::afterLast($lampiran, '/') }}
-                                                                                </a>
-                                                                            </div>
-                                                                        @endif
-                                                                    </div>
-                                                                    <div class="text-end ms-2">
-                                                                        <span class="badge bg-{{ $ao->status === 'proses_qa' ? 'success' : ($ao->status === 'cancel_qa' ? 'danger' : 'secondary') }} small">
-                                                                            {{ $ao->status }}
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                            @else
-                                                <div class="text-muted small">Belum ada officer</div>
-                                            @endif
-                                                {{-- History will be shown in a modal (triggered by the History button) --}}
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                         {{-- follow-up row: assign officer form & update status (unchanged) --}}
-                        <div class="row" style="gap: 1.5rem 0;">
-                            <div class="col-md-6 mb-3">
-                                <div class="card flex-fill h-100">
+                        <div class="row followup-action-row">
+                            <div class="col-12 col-md-6 mb-3">
+                                <div class="card flex-fill h-100 followup-action-card">
                                     <div class="card-header pb-0">
-                                        <h6 class="mb-0">Assign Officer (Multi Assign dengan Mention)</h6>
+                                        <h6 class="mb-0"><span class="section-title-icon"><i class="fas fa-user-plus"></i></span>Assign Officer <small class="section-subtitle">Multi assign dengan mention</small></h6>
                                     </div>
                                     <div class="card-body">
                                         <form method="POST" action="{{ route('admin.tindak-lanjut') }}" id="assign-officer-form" class="mb-3" @if($functions_disabled) aria-disabled="true" @endif>
                                             @csrf
                                             <input type="hidden" name="nomor_tiket" value="{{ $ticket->nomor_tiket }}">
                                             <div class="mb-3">
-                                                <label class="fw-bold mb-1">Assign ke Officer:</label>
+                                                <label class="fw-bold mb-1" for="officer-mention">Assign ke Officer</label>
                                                 <input type="text"
                                                     id="officer-mention"
                                                     class="form-control"
@@ -399,23 +372,25 @@
                                                 <div id="officer-suggestions" class="list-group position-absolute" style="z-index: 10; max-height: 200px; overflow-y: auto; display:none;"></div>
                                                 <div id="officer-tags" class="mt-2"></div>
                                                 <input type="hidden" name="officer_ids" id="officer-ids">
+                                                <div class="action-helper">Gunakan @nama untuk mention officer lainnya</div>
                                             </div>
-                                            <button type="submit" class="btn btn-sm btn-outline-primary" {{ $functions_disabled ? 'disabled' : '' }}>Assign Officer</button>
+                                            <button type="submit" class="btn btn-sm btn-helpdesk-primary" {{ $functions_disabled ? 'disabled' : '' }}><i class="fas fa-user-plus me-1"></i> Assign Officer</button>
                                         </form>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="card flex-fill h-100">
+                            <div class="col-12 col-md-6 mb-3">
+                                <div class="card flex-fill h-100 followup-action-card">
                                     <div class="card-header pb-0">
-                                        <h6 class="mb-0">Update Status Tiket</h6>
+                                        <h6 class="mb-0"><span class="section-title-icon"><i class="fas fa-clipboard-check"></i></span>Update Status Tiket</h6>
                                     </div>
                                     <div class="card-body">
-                                        <form method="POST" action="{{ route('admin.tindak-lanjut') }}" class="d-flex flex-wrap gap-2 align-items-center" id="admin-status-form" @if($functions_disabled) aria-disabled="true" @endif>
+                                        <form method="POST" action="{{ route('admin.tindak-lanjut') }}" id="admin-status-form" @if($functions_disabled) aria-disabled="true" @endif>
                                             @csrf
                                             <input type="hidden" name="nomor_tiket" value="{{ $ticket->nomor_tiket }}">
-                                            <label class="mb-0 fw-bold">Status:</label>
-                                            <select class="form-select form-select-sm" name="status" id="admin-status-select" style="min-width:140px;" {{ $functions_disabled ? 'disabled' : '' }}>
+                                            <div class="current-status-row">Status Saat Ini <span class="status-pill status-pill--{{ $ticket->status }}">{{ str_replace('_', ' ', $ticket->status) }}</span></div>
+                                            <label class="mb-1 fw-bold" for="admin-status-select">Ubah Status</label>
+                                            <select class="form-select form-select-sm mb-3" name="status" id="admin-status-select" {{ $functions_disabled ? 'disabled' : '' }}>
                                                 <option value="open" {{ $ticket->status == 'open' ? 'selected' : '' }}>Open</option>
                                                 <option value="in_progress" {{ $ticket->status == 'in_progress' ? 'selected' : '' }}>On Progress</option>
                                                 <option value="closed" {{ $ticket->status == 'closed' ? 'selected' : '' }}>Closed</option>
@@ -427,7 +402,7 @@
                                             <input type="hidden" name="tindak_lanjut_closing" id="tindak_lanjut_closing">
                                             <input type="hidden" name="media_closing" id="media_closing">
 
-                                            <button type="submit" class="btn btn-sm btn-outline-success" id="admin-status-submit" {{ $functions_disabled ? 'disabled' : '' }}>Update Status</button>
+                                            <button type="submit" class="btn btn-sm btn-helpdesk-success" id="admin-status-submit" {{ $functions_disabled ? 'disabled' : '' }}><i class="fas fa-check me-1"></i> Update Status</button>
                                         </form>
                                     </div>
                                 </div>
@@ -439,6 +414,9 @@
             </div>
         </div>
         <div class="col-12 col-xl-4 d-flex flex-column" style="gap: 1rem;">
+            @if(!empty($ticket))
+                @include('admin.partials.tindak-lanjut-summary', ['ticket' => $ticket])
+            @endif
             <div class="card followup-chat-card h-100 flex-fill" id="chat-card">
                 <div class="card-header pb-0 d-flex justify-content-between align-items-center">
                     <h6 class="mb-0">Chat Tindak Lanjut</h6>
@@ -446,7 +424,7 @@
                 <div class="card-body p-2 d-flex flex-column" style="height:100%; min-height:0;">
                     @if(!empty($ticket))
                         <div id="chat-messages-wrapper" style="flex:1 1 auto; min-height:0;">
-                            <div id="chat-messages" class="h-100 overflow-auto" style="padding:8px; background:#f8f9fa; border-radius:8px; display:flex;flex-direction:column;gap:10px;"></div>
+                            <div id="chat-messages" class="h-100 overflow-auto chat-message-surface" style="display:flex;flex-direction:column;gap:10px;"></div>
                         </div>
 
                         <div class="chat-controls mt-2 pt-2 border-top" style="flex:0 0 auto;">
@@ -468,7 +446,7 @@
                                     type="text"
                                     id="chat-input"
                                     class="form-control flex-grow-1"
-                                    placeholder="Ketik pesan..."
+                                    placeholder="Ketik pesan Anda..."
                                     aria-label="Chat input"
                                     style="height:36px;border-radius:8px;font-size:0.8rem;padding-top:0.35rem;padding-bottom:0.35rem;"
                                 />
@@ -489,7 +467,7 @@
                             <div id="chat-attachment-preview" class="mt-2 small text-muted"></div>
                         </div>
                     @else
-                        <div class="text-center text-muted">Cari tiket untuk mulai chat.</div>
+                        <div class="chat-empty-state"><div class="chat-empty-icon"><i class="far fa-comments"></i></div><strong>Belum ada tiket dipilih</strong><span>Pilih tiket dari Daftar Tiket untuk mulai percakapan</span></div>
                     @endif
                 </div>
             </div>
@@ -639,6 +617,10 @@
 
     function render(msgs){
         messagesEl.innerHTML = '';
+        if (!msgs.length) {
+            messagesEl.innerHTML = '<div class="chat-empty-state"><div class="chat-empty-icon"><i class="far fa-comments"></i></div><strong>Belum ada pesan</strong><span>Mulai percakapan untuk tindak lanjut tiket ini</span></div>';
+            return;
+        }
         msgs.forEach(m => {
             const wrap = document.createElement('div');
             wrap.style.display = 'flex';
@@ -660,7 +642,7 @@
             bubble.style.fontSize = '0.85rem';
             bubble.style.whiteSpace = 'pre-wrap';
             if(m.user_id === @json(auth()->id())){
-                bubble.style.background = '#0d6efd';
+                bubble.style.background = '#5b3fd3';
                 bubble.style.color = '#fff';
             } else {
                 bubble.style.background = '#e9ecef';
@@ -704,6 +686,7 @@
         fd.append('nomor_tiket', nomor);
         fd.append('message', text);
         if(f) fd.append('attachment', f);
+        btnSend.disabled = true;
         const res = await fetch("{{ route('chat.send') }}", {
             method: 'POST',
             credentials: 'same-origin',
@@ -721,6 +704,14 @@
             await fetchMessages();
         } else {
             alert('Gagal mengirim pesan');
+        }
+        btnSend.disabled = false;
+    });
+
+    input && input.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            btnSend.click();
         }
     });
 
@@ -852,7 +843,7 @@ document.addEventListener('DOMContentLoaded', function(){
     const adjustHeight = () => {
         if (!front || !flip) return;
         // measure rendered height of front content
-        const maxCompactHeight = 320;
+        const maxCompactHeight = 450;
         const h = Math.min(front.scrollHeight, maxCompactHeight);
         flip.style.minHeight = h + 'px';
         if (inner) inner.style.minHeight = h + 'px';
@@ -982,6 +973,15 @@ document.addEventListener('DOMContentLoaded', function(){
 @endif
 <script>
 document.addEventListener('DOMContentLoaded', function(){
+    document.body.classList.add('helpdesk-followup');
+    const sidebarToggle = document.getElementById('helpdesk-sidebar-toggle');
+    const nativeToggle = document.getElementById('iconSidenav');
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function(){
+            if (nativeToggle && window.innerWidth < 1200) nativeToggle.click();
+            else document.body.classList.toggle('g-sidenav-pinned');
+        });
+    }
     const f = document.querySelector('footer');
     if (f) f.remove();
 });
