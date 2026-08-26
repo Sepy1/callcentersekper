@@ -114,6 +114,14 @@
         </a>
       </li>
       <li class="nav-item">
+        <a class="nav-link {{ Request::is('admin/users*') ? 'active bg-gradient-warning text-white' : '' }}" href="{{ route('admin.users') }}">
+          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+            <i class="ni ni-single-02 text-lg" style="opacity:1!important"></i>
+          </div>
+          <span class="nav-link-text ms-1">Manajemen User</span>
+        </a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link {{ (Request::is('admin/settings/*') || Request::is('admin/settings') || Request::is('admin/settings/sla') ? 'active bg-gradient-warning text-white' : '') }}" href="{{ url('admin/settings/sla') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <i class="ni ni-settings text-lg opacity-10"></i>
@@ -178,6 +186,26 @@
         </a>
       </li>
       @endif
+
+      {{-- CABANG --}}
+      @if(auth()->check() && auth()->user()->role === 'cabang')
+      <li class="nav-item">
+        <a class="nav-link {{ Request::is('cabang/dashboard') ? 'active bg-gradient-warning text-white' : '' }}" href="{{ route('cabang.dashboard') }}">
+          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+            <i class="ni ni-chart-bar-32 text-lg opacity-10"></i>
+          </div>
+          <span class="nav-link-text ms-1">Dashboard Cabang</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {{ Request::is('cabang/tickets') ? 'active bg-gradient-warning text-white' : '' }}" href="{{ route('cabang.tickets') }}">
+          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+            <i class="ni ni-bullet-list-67 text-lg opacity-10"></i>
+          </div>
+          <span class="nav-link-text ms-1">Daftar Tiket</span>
+        </a>
+      </li>
+      @endif
       <li class="nav-item sidebar-appearance-item">
         <button class="nav-link w-100 border-0 bg-transparent text-start" type="button" id="appearance-menu-toggle" aria-expanded="false" aria-controls="appearance-menu-panel">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -207,6 +235,7 @@
 
   <style>
     #sidenav-main { background:var(--app-sidebar,#fff)!important; transition:background-color .2s ease; }
+    #sidenav-collapse-main { height:calc(100vh - 145px)!important; max-height:none!important; overflow-y:auto!important; overflow-x:hidden!important; padding-bottom:1rem; }
     body,.main-content,.bg-gray-100 { background-color:var(--app-background,#f8f9fa)!important; transition:background-color .2s ease; }
     #sidenav-main .navbar-brand span,#sidenav-main .sidebar-user .fw-bold { color:var(--app-sidebar-text,#344767)!important; }
     #sidenav-main .navbar-nav .nav-link:not(.active) { color:var(--app-sidebar-text,#67748e)!important; }
@@ -220,7 +249,7 @@
     #sidenav-main .horizontal { border-color:var(--app-sidebar-divider,rgba(0,0,0,.12)); }
     .sidebar-appearance-item { position:relative; margin-top:.35rem; }
     .appearance-chevron { font-size:.65rem; transition:transform .18s ease; }.sidebar-appearance-item.is-open .appearance-chevron{transform:rotate(180deg)}
-    .appearance-menu-panel { margin:0 0 .45rem; padding:.15rem .35rem; background:transparent; }
+    .appearance-menu-panel { max-height:none!important; overflow:visible!important; margin:0 0 .45rem; padding:.15rem .35rem; background:transparent; }
     .appearance-menu-title { margin:.1rem .25rem .3rem; color:var(--app-sidebar-text,#67748e); font-size:.58rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; opacity:.75; }
     .appearance-theme-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.15rem; }.appearance-theme-option{display:flex;align-items:center;gap:.32rem;min-width:0;width:100%;padding:.34rem .3rem;border:0;border-radius:.45rem;background:transparent;color:var(--app-sidebar-text,#475569);font-size:.63rem;text-align:left}.appearance-theme-option>span:nth-child(2){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.appearance-theme-option:hover{background:rgba(128,138,160,.12)}.appearance-theme-option.is-active{background:rgba(109,74,255,.14);color:var(--app-sidebar-icon,#4f36c8);font-weight:700}.theme-check{display:none;margin-left:auto;font-size:.55rem}.appearance-theme-option.is-active .theme-check{display:block}
     .theme-preview{display:flex;width:22px;height:15px;flex:0 0 auto;border:1px solid rgba(128,138,160,.25);border-radius:4px;overflow:hidden;background:#fff}.theme-preview i{width:8px;background:var(--preview-sidebar)}.theme-preview b{width:6px;height:4px;margin:3px;border-radius:2px;background:var(--preview-active)}.theme-preview--default{--preview-sidebar:#fff;--preview-active:#ff9a2a}.theme-preview--indigo{--preview-sidebar:#241b5c;--preview-active:#6d4aff}.theme-preview--navy{--preview-sidebar:#12213d;--preview-active:#2584e8}.theme-preview--emerald{--preview-sidebar:#113d35;--preview-active:#24b47e}.theme-preview--rose{--preview-sidebar:#4c1930;--preview-active:#e44f87}.theme-preview--amber{--preview-sidebar:#4a3212;--preview-active:#f59e0b}.theme-preview--cyan{--preview-sidebar:#103b46;--preview-active:#16a6c7}
@@ -237,18 +266,18 @@
         cyan:{sidebar:'#103b46',active:'#16a6c7',ticketCard:'linear-gradient(145deg,#176176 0%,#0d3946 100%)',icon:'#76d7e9',iconBg:'rgba(118,215,233,.12)',activeIconBg:'rgba(255,255,255,.18)',text:'#d0ebf0',heading:'#ffffff',divider:'rgba(255,255,255,.14)',background:'#edf8fa'}
       };
       function applyTheme(name){
-        const selected=themes[name]||themes.default, root=document.documentElement;
+        const selected=themes[name]||themes.emerald, root=document.documentElement;
         root.style.setProperty('--app-sidebar',selected.sidebar);root.style.setProperty('--app-sidebar-active',selected.active);root.style.setProperty('--app-ticket-card',selected.ticketCard);root.style.setProperty('--app-sidebar-icon',selected.icon);root.style.setProperty('--app-sidebar-icon-bg',selected.iconBg);root.style.setProperty('--app-sidebar-active-icon-bg',selected.activeIconBg);root.style.setProperty('--app-sidebar-text',selected.text);root.style.setProperty('--app-sidebar-divider',selected.divider);root.style.setProperty('--app-background',selected.background);
         document.querySelectorAll('#sidenav-main .navbar-brand span,#sidenav-main .sidebar-user .fw-bold').forEach(el=>el.style.setProperty('color',selected.heading,'important'));
         document.querySelectorAll('.appearance-theme-option').forEach(el=>el.classList.toggle('is-active',el.dataset.theme===name));
         try{localStorage.setItem('callcenter-theme',name)}catch(e){}
       }
-      let saved='default';try{saved=localStorage.getItem('callcenter-theme')||'default'}catch(e){}
+      let saved='emerald';try{saved=localStorage.getItem('callcenter-theme')||'emerald'}catch(e){}
       applyTheme(saved);
       document.addEventListener('DOMContentLoaded',function(){
         applyTheme(saved);
         const toggle=document.getElementById('appearance-menu-toggle'),panel=document.getElementById('appearance-menu-panel'),item=document.querySelector('.sidebar-appearance-item');
-        if(toggle&&panel){toggle.addEventListener('click',function(){const open=panel.hasAttribute('hidden');panel.toggleAttribute('hidden',!open);item.classList.toggle('is-open',open);toggle.setAttribute('aria-expanded',String(open))})}
+        if(toggle&&panel){toggle.addEventListener('click',function(){const open=panel.hasAttribute('hidden');panel.toggleAttribute('hidden',!open);item.classList.toggle('is-open',open);toggle.setAttribute('aria-expanded',String(open));if(open){requestAnimationFrame(function(){item.scrollIntoView({block:'nearest',behavior:'smooth'})})}})}
         document.querySelectorAll('.appearance-theme-option').forEach(option=>option.addEventListener('click',function(){saved=this.dataset.theme;applyTheme(saved)}));
       });
     })();

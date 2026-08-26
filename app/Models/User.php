@@ -23,6 +23,7 @@ class User extends Authenticatable
         'password',
         'phone',
         'no_hp',
+        'kode_kantor',
         'location',
         'about_me',
         'role',

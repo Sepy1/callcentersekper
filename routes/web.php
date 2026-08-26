@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\TicketController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Officer\TindakLanjutController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\WhatsappTemplateController;
@@ -45,6 +46,8 @@ Route::group(['middleware' => 'auth'], function () {
             return redirect('/officer/dashboard-officer');
         } elseif ($role === 'qa') {
             return redirect('/qa/dashboard-qa');
+        } elseif ($role === 'cabang') {
+            return redirect()->route('cabang.dashboard');
         }
 		return view('dashboard');
 	})->name('dashboard');
@@ -70,7 +73,7 @@ Route::group(['middleware' => 'auth'], function () {
 
 
 
-    Route::get('/logout', [SessionsController::class, 'destroy']);
+    Route::get('/logout', [SessionsController::class, 'destroy'])->name('logout');
 	Route::get('/user-profile', [InfoUserController::class, 'create']);
 	Route::post('/user-profile', [InfoUserController::class, 'store']);
     Route::get('/login', function () {
@@ -88,6 +91,8 @@ Route::get('/', function () {
             return redirect('/officer/dashboard-officer');
         } elseif ($role === 'qa') {
             return redirect('/qa/dashboard-qa');
+        } elseif ($role === 'cabang') {
+            return redirect()->route('cabang.dashboard');
         }
         return view('dashboard');
     }
@@ -113,6 +118,15 @@ Route::get('/login', function () {
 // Public endpoint to send WhatsApp messages (no role/auth middleware)
 Route::post('/send-whatsapp', [\App\Http\Controllers\WhatsappController::class, 'send']);
 Route::group(['middleware' => 'auth'], function () {
+    Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users');
+    Route::post('/admin/users', [UserController::class, 'store'])->name('admin.users.store');
+    Route::put('/admin/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
+    Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+
+    Route::get('/cabang/dashboard', [\App\Http\Controllers\Cabang\TicketController::class, 'dashboard'])->name('cabang.dashboard');
+    Route::get('/cabang/tickets', [\App\Http\Controllers\Cabang\TicketController::class, 'index'])->name('cabang.tickets');
+    Route::post('/cabang/tickets', [\App\Http\Controllers\Cabang\TicketController::class, 'store'])->name('cabang.tickets.store');
+
     // Tindak lanjut admin
     Route::match(['get', 'post'], '/admin/tindak-lanjut', [TicketController::class, 'tindakLanjut'])->name('admin.tindak-lanjut');
 

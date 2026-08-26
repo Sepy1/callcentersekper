@@ -43,6 +43,8 @@ class SessionsController extends Controller
                 return redirect('/officer/dashboard-officer')->with(['success'=>'You are logged in as officer.']);
             } elseif ($role === 'qa') {
                 return redirect('/qa/dashboard-qa')->with(['success'=>'You are logged in as QA.']);
+            } elseif ($role === 'cabang') {
+                return redirect()->route('cabang.dashboard');
             } else {
                 return redirect('dashboard')->with(['success'=>'You are logged in.']);
             }

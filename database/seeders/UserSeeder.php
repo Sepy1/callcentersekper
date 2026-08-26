@@ -2,100 +2,50 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run()
+    public function run(): void
     {
-        DB::table('users')->insert([
+        $defaultPassword = env('SEEDER_USER_PASSWORD', 'secret');
+
+        $users = [
+            ['name' => 'it', 'email' => 'it@bkkjateng.co.id', 'role' => 'admin'],
+            ['name' => 'admin', 'email' => 'admin@bkkjateng.co.id', 'role' => 'admin'],
+            ['name' => 'qa', 'email' => 'qa@bkkjateng.co.id', 'role' => 'qa'],
+            ['name' => 'Divisi Operasional', 'email' => 'operasional@bkkjateng.co.id', 'role' => 'officer', 'no_hp' => '6285725681860'],
+            ['name' => 'Divisi Penyelesaian Kredit', 'email' => 'dpk@bkkjateng.co.id', 'role' => 'officer', 'no_hp' => '6285725681860'],
+            ['name' => 'Divisi SDM Umum', 'email' => 'sdmumum@bkkjateng.co.id', 'role' => 'officer', 'no_hp' => '6285725681860'],
+            ['name' => 'Satuan Kerja Audit Internal', 'email' => 'skai@bkkjateng.co.id', 'role' => 'officer', 'no_hp' => '6285725681860'],
+            ['name' => 'Satuan Kerja Manajemen Risiko', 'email' => 'skmr@bkkjateng.co.id', 'role' => 'officer', 'no_hp' => '6285725681860'],
+            ['name' => 'Divisi Kepatuhan', 'email' => 'kepatuhan@bkkjateng.co.id', 'role' => 'officer', 'no_hp' => '6285725681860'],
+            ['name' => 'Divisi Pemasaran', 'email' => 'pemasaran@bkkjateng.co.id', 'role' => 'officer', 'no_hp' => '6285725681860'],
             [
-                'name' => 'it',
-                'email' => 'it@a.com',
-                'password' => Hash::make('secret'),
-                'role' => 'admin',
-                'created_at' => now(),
-                'updated_at' => now()
+                'name' => 'KCU',
+                'email' => 'cabang001@bkkjateng.co.id',
+                'role' => 'cabang',
+                'kode_kantor' => '001',
             ],
              [
-                'name' => 'qa',
-                'email' => 'qa@a.com',
-                'password' => Hash::make('secret'),
-                'role' => 'qa',
-                'created_at' => now(),
-                'updated_at' => now()
+                'name' => 'Pusat',
+                'email' => 'kcu@bkkjateng.co.id',
+                'role' => 'cabang',
+                'kode_kantor' => '000',
             ],
-            [
-                'name' => 'admin',
-                'email' => 'admin@a.com',
-                'password' => Hash::make('secret'),
-                'role' => 'admin',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'name' => 'Divisi Operasional',
-                'email' => 'operasional@a.com',
-                'password' => Hash::make('secret'),
-                'role' => 'officer',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-             [
-                'name' => 'Divisi Penyelesaian Kredit',
-                'email' => 'dpk@a.com',
-                'password' => Hash::make('secret'),
-                'role' => 'officer',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-             [
-                'name' => 'Divisi SDM Umum',
-                'email' => 'sdmumum@a.com',
-                'password' => Hash::make('secret'),
-                'role' => 'officer',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-             [
-                'name' => 'Satuan Kerja Audit Internal',
-                'email' => 'skai@a.com',
-                'password' => Hash::make('secret'),
-                'role' => 'officer',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-             [
-                'name' => 'Satuan Kerja Manajemen Risiko',
-                'email' => 'skmr@a.com',
-                'password' => Hash::make('secret'),
-                'role' => 'officer',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'name' => 'Divisi Kepatuhan',
-                'email' => 'kepatuhan@a.com',
-                'password' => Hash::make('secret'),
-                'role' => 'officer',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'name' => 'Divisi Pemasaran',
-                'email' => 'pemasaran@a.com',
-                'password' => Hash::make('secret'),
-                'role' => 'officer',
-                'created_at' => now(),
-                'updated_at' => now()
-            ]
-        ]);
+        ];
+
+        foreach ($users as $attributes) {
+            $user = User::firstOrNew(['email' => $attributes['email']]);
+            $user->fill($attributes);
+
+            if (! $user->exists) {
+                $user->password = Hash::make($defaultPassword);
+            }
+
+            $user->save();
+        }
     }
 }
