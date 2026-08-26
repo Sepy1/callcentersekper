@@ -129,11 +129,46 @@ class TicketController extends Controller
                         $this->notifyOfficers($toAdd, $titleAssign, $msgAssign, $linkAssign, ['ticket_id' => $ticket->id, 'action' => 'assigned']);
 
                         // send email to newly assigned officers
+                        $users = User::whereIn('id', $toAdd)->get();
                         try {
-                            $users = User::whereIn('id', $toAdd)->get();
                             NotificationFacade::send($users, new TicketAssignedNotification($ticket));
                         } catch (\Throwable $e) {
                             \Log::error('send ticket assigned email failed: ' . $e->getMessage());
+                        }
+
+                        // Send WABA notification only to newly assigned officers.
+                        foreach ($users->where('role', 'officer') as $officer) {
+                            $phone = $this->normalizeWhatsappPhone($officer->no_hp);
+
+                            if ($phone === '') {
+                                \Log::warning('ticket assigned WhatsApp skipped: officer has no phone number', [
+                                    'ticket_id' => $ticket->id,
+                                    'officer_id' => $officer->id,
+                                ]);
+                                continue;
+                            }
+
+                            try {
+                                \App\Jobs\SendWhatsappTemplate::dispatch(
+                                    $phone,
+                                    'ccs_tl',
+                                    'en',
+                                    [
+                                        $officer->name,
+                                        $ticket->nomor_tiket,
+                                        $ticket->kategori ?? '-',
+                                        $ticket->judul ?? '-',
+                                    ],
+                                    $ticket->id,
+                                    'officer/tindak-lanjut?ticket_id=' . $ticket->id
+                                );
+                            } catch (\Throwable $e) {
+                                \Log::error('ticket assigned WhatsApp queue failed', [
+                                    'ticket_id' => $ticket->id,
+                                    'officer_id' => $officer->id,
+                                    'error' => $e->getMessage(),
+                                ]);
+                            }
                         }
 
                         // log additions
@@ -260,6 +295,21 @@ class TicketController extends Controller
         }
 
         return view('admin.tindak-lanjut', compact('ticket', 'officers'));
+    }
+
+    private function normalizeWhatsappPhone(?string $phone): string
+    {
+        $phone = preg_replace('/[^0-9]/', '', (string) $phone);
+
+        if (str_starts_with($phone, '08')) {
+            return '628' . substr($phone, 2);
+        }
+
+        if (str_starts_with($phone, '8')) {
+            return '62' . $phone;
+        }
+
+        return $phone;
     }
 
     // CREATE TICKET (POST)

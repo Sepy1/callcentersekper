@@ -62,9 +62,27 @@ class DepWhatsappService
         return $this->postMahadata($payload);
     }
 
-    public function sendTemplateByName(string $phone, string $templateName, string $language = 'id', array $params = []): array
+    public function sendTemplateByName(string $phone, string $templateName, string $language = 'id', array $params = [], ?string $buttonUrlParameter = null): array
     {
         $parameters = array_map(fn($p) => ['type' => 'text', 'text' => (string)$p], array_values($params));
+
+        $components = [
+            [
+                'type' => 'body',
+                'parameters' => $parameters,
+            ],
+        ];
+
+        if ($buttonUrlParameter !== null && $buttonUrlParameter !== '') {
+            $components[] = [
+                'type' => 'button',
+                'sub_type' => 'url',
+                'index' => '0',
+                'parameters' => [
+                    ['type' => 'text', 'text' => $buttonUrlParameter],
+                ],
+            ];
+        }
 
         $payload = [
             'messaging_product' => 'whatsapp',
@@ -73,12 +91,7 @@ class DepWhatsappService
             'template' => [
                 'name' => $templateName,
                 'language' => ['code' => $language],
-                'components' => [
-                    [
-                        'type' => 'body',
-                        'parameters' => $parameters,
-                    ]
-                ]
+                'components' => $components,
             ]
         ];
 
@@ -86,9 +99,9 @@ class DepWhatsappService
     }
 
     // keep compatibility: treat templateId as template name
-    public function sendTemplateById(string $phone, string $templateId, string $language = 'id', array $params = []): array
+    public function sendTemplateById(string $phone, string $templateId, string $language = 'id', array $params = [], ?string $buttonUrlParameter = null): array
     {
-        return $this->sendTemplateByName($phone, $templateId, $language, $params);
+        return $this->sendTemplateByName($phone, $templateId, $language, $params, $buttonUrlParameter);
     }
 
     public function getTemplates(): array

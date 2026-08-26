@@ -19,14 +19,16 @@ class SendWhatsappTemplate implements ShouldQueue
     public string $language;
     public array $params;
     public ?int $ticketId;
+    public ?string $buttonUrlParameter;
 
-    public function __construct(string $phone, string $templateId, string $language = 'id', array $params = [], ?int $ticketId = null)
+    public function __construct(string $phone, string $templateId, string $language = 'id', array $params = [], ?int $ticketId = null, ?string $buttonUrlParameter = null)
     {
         $this->phone = $phone;
         $this->templateId = $templateId;
         $this->language = $language;
         $this->params = $params;
         $this->ticketId = $ticketId;
+        $this->buttonUrlParameter = $buttonUrlParameter;
         // put on notifications queue by default
         $this->onQueue('notifications');
     }
@@ -34,7 +36,7 @@ class SendWhatsappTemplate implements ShouldQueue
     public function handle(DepWhatsappService $dep)
     {
         try {
-            $dep->sendTemplateById($this->phone, $this->templateId, $this->language, $this->params);
+            $dep->sendTemplateById($this->phone, $this->templateId, $this->language, $this->params, $this->buttonUrlParameter);
             Log::info('TICKET WHATSAPP SENT', [
                 'ticket_id' => $this->ticketId,
                 'template' => $this->templateId,

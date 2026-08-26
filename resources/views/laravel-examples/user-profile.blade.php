@@ -158,6 +158,15 @@
                                         @enderror
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <label for="user-no-hp" class="form-control-label">No. HP WhatsApp</label>
+                                <div class="@error('no_hp') border border-danger rounded-3 @enderror">
+                                    <input class="form-control" type="tel" placeholder="081234567890" id="user-no-hp" name="no_hp" value="{{ old('no_hp', auth()->user()->no_hp) }}">
+                                    @error('no_hp')
+                                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">

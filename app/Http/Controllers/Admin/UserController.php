@@ -16,6 +16,7 @@ class UserController extends Controller
         $attributes = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
+            'no_hp' => ['nullable', 'string', 'max:20', 'regex:/^[0-9+() .-]+$/'],
             'role' => ['required', Rule::in(['admin', 'officer', 'qa'])],
         ]);
 
