@@ -29,6 +29,9 @@ class TicketAssignedNotification extends Notification implements ShouldQueue
         $ticket = $this->ticket;
         return (new MailMessage)
                     ->subject('Anda ditugaskan pada tiket: ' . $ticket->nomor_tiket)
-                    ->markdown('emails.tickets.assigned', ['ticket' => $ticket]);
+                    ->markdown('emails.tickets.assigned', [
+                        'ticket' => $ticket,
+                        'recipientName' => $notifiable->name ?? 'Officer',
+                    ]);
     }
 }

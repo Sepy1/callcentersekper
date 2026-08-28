@@ -156,7 +156,7 @@ class TicketController extends Controller
                                     [
                                         $officer->name,
                                         $ticket->nomor_tiket,
-                                        $ticket->kategori ?? '-',
+                                        $ticket->kategori_nama,
                                         $ticket->judul ?? '-',
                                     ],
                                     $ticket->id,

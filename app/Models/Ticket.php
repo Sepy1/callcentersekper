@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Models\Notification;
+use App\Models\Category;
 
 class Ticket extends Model
 {
@@ -22,6 +23,25 @@ class Ticket extends Model
     protected $casts = [
         'closing_at' => 'datetime',
     ];
+
+    /**
+     * Nama kategori yang aman untuk ditampilkan pada notifikasi.
+     * Data lama/API dapat menyimpan ID kategori di kolom `kategori`.
+     */
+    public function getKategoriNamaAttribute(): string
+    {
+        $kategori = trim((string) $this->kategori);
+
+        if ($kategori === '') {
+            return '-';
+        }
+
+        if (ctype_digit($kategori)) {
+            return (string) (Category::find($kategori)->name ?? '-');
+        }
+
+        return $kategori;
+    }
 
     public function officers()
     {

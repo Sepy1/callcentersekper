@@ -2,9 +2,13 @@
 
 # Tiket perlu dicek oleh QA
 
+Halo {{ $recipientName ?? 'QA' }},
+
 Tiket **{{ $ticket->nomor_tiket }}** perlu diperiksa dan di-resolve oleh tim QA.
 
 **Judul:** {{ $ticket->judul ?? '-' }}
+
+**Kategori:** {{ $ticket->kategori_nama }}
 
 Silakan buka tiket untuk tindakan lebih lanjut.
 

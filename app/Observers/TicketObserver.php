@@ -26,7 +26,7 @@ class TicketObserver
                         $ticket->nama_pelapor,
                         $ticket->nomor_tiket,
                         $ticket->judul,
-                        $ticket->kategori,
+                        $ticket->kategori_nama,
                         $ticket->created_at->format('d F Y'),
                     ],
                     $ticket->id

@@ -29,11 +29,18 @@ class TicketCreatedNotification extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         $ticket = $this->ticket;
+        $recipientName = $this->recipientType === 'pelapor'
+            ? $ticket->nama_pelapor
+            : ($notifiable->name ?? 'Pengguna');
 
         // use markdown view for email templates
         return (new MailMessage)
                     ->subject("Tiket baru: {$ticket->nomor_tiket}")
-                    ->markdown('emails.tickets.created', ['ticket' => $ticket, 'recipientType' => $this->recipientType]);
+                    ->markdown('emails.tickets.created', [
+                        'ticket' => $ticket,
+                        'recipientType' => $this->recipientType,
+                        'recipientName' => $recipientName,
+                    ]);
     }
 
     public function ticketId(): int

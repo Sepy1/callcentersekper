@@ -20,7 +20,7 @@ class HelpdeskWhatsappNotifier
                 $ticket->nama_pelapor,                    // {{1}}
                 $ticket->nomor_tiket,                     // {{2}}
                 $ticket->judul ?? '-',                    // {{3}}
-                $ticket->kategori ?? '-',                 // {{4}}
+                $ticket->kategori_nama,                   // {{4}}
                 Carbon::parse($ticket->created_at)
                     ->translatedFormat('d F Y'),           // {{5}}
             ]

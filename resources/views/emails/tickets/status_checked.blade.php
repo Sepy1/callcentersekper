@@ -7,6 +7,7 @@ Berikut adalah status terbaru untuk tiket Anda.
 
 - **Nomor:** {{ $ticket->nomor_tiket }}
 - **Judul:** {{ $ticket->judul ?? '-' }}
+- **Kategori:** {{ $ticket->kategori_nama }}
 - **Status saat ini:** {{ $ticket->status }}
 
 

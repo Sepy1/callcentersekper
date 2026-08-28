@@ -29,6 +29,9 @@ class TicketNeedQaNotification extends Notification implements ShouldQueue
         $ticket = $this->ticket;
         return (new MailMessage)
                     ->subject('Tiket perlu dicek oleh QA: ' . $ticket->nomor_tiket)
-                    ->markdown('emails.tickets.qa_needed', ['ticket' => $ticket]);
+                    ->markdown('emails.tickets.qa_needed', [
+                        'ticket' => $ticket,
+                        'recipientName' => $notifiable->name ?? 'QA',
+                    ]);
     }
 }

@@ -29,6 +29,9 @@ class TicketQaResolvedNotification extends Notification implements ShouldQueue
         $ticket = $this->ticket;
         return (new MailMessage)
                     ->subject('Tiket perlu di-close: ' . $ticket->nomor_tiket)
-                    ->markdown('emails.tickets.qa_resolved', ['ticket' => $ticket]);
+                    ->markdown('emails.tickets.qa_resolved', [
+                        'ticket' => $ticket,
+                        'recipientName' => $notifiable->name ?? 'Admin',
+                    ]);
     }
 }
