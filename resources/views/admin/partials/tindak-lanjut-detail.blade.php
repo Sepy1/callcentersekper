@@ -1,6 +1,12 @@
 @php
     $officerList = isset($ticket) ? $ticket->officers()->get() : collect();
-    $statusLabel = str_replace('_', ' ', $ticket->status ?? '');
+    $statusLabel = [
+        'open' => 'Baru',
+        'in_progress' => 'Sedang Diproses',
+        'resolved' => 'Selesai oleh QA',
+        'closed' => 'Ditutup',
+        'rejected' => 'Ditolak',
+    ][$ticket->status ?? ''] ?? str_replace('_', ' ', $ticket->status ?? '');
 @endphp
 <article class="ticket-overview" aria-label="Detail tiket {{ $ticket->nomor_tiket }}">
     <div class="ticket-overview__page-heading">
@@ -10,8 +16,8 @@
     <header class="ticket-overview__header">
         <div><span class="ticket-overview__eyebrow"><i class="fas fa-ticket-alt"></i> Detail tiket</span><h2>{{ $ticket->nomor_tiket }}</h2></div>
         <div class="ticket-overview__actions">
-            <button class="ticket-history-button" type="button" data-bs-toggle="modal" data-bs-target="#ticket-history-modal" id="btn-history" aria-label="Lihat history tiket">
-                <i class="fas fa-history"></i><span>History</span>
+            <button class="ticket-history-button" type="button" data-bs-toggle="modal" data-bs-target="#ticket-history-modal" id="btn-history" aria-label="Lihat riwayat tiket">
+                <i class="fas fa-history"></i><span>Riwayat</span>
             </button>
             <span class="status-pill status-pill--{{ $ticket->status }}">{{ $statusLabel }}</span>
         </div>
@@ -30,3 +36,4 @@
     <div class="ticket-field ticket-field--wide"><span>Dibuat</span><strong>{{ $ticket->created_at ? \Illuminate\Support\Carbon::parse($ticket->created_at)->translatedFormat('d F Y, H:i:s') : '-' }}</strong></div>
     <div class="ticket-overview__hint"><i class="fas fa-sync-alt"></i> Klik kartu untuk melihat data pelapor lengkap</div>
 </article>
+<iframe name="ticket-history-pdf-frame" title="Unduhan PDF riwayat tiket" class="d-none" aria-hidden="true"></iframe>

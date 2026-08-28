@@ -234,8 +234,13 @@
   </div>
 
   <style>
-    #sidenav-main { background:var(--app-sidebar,#fff)!important; transition:background-color .2s ease; }
-    #sidenav-collapse-main { height:calc(100vh - 145px)!important; max-height:none!important; overflow-y:auto!important; overflow-x:hidden!important; padding-bottom:1rem; }
+    #sidenav-main { position:fixed!important; overflow:hidden!important; background:var(--app-sidebar,#fff)!important; transition:background-color .2s ease; }
+    #sidenav-collapse-main { width:100%; height:calc(100vh - 145px)!important; max-height:none!important; overflow:hidden!important; padding-bottom:1rem; scrollbar-width:none; -ms-overflow-style:none; overscroll-behavior:none; touch-action:none; }
+    #sidenav-collapse-main::-webkit-scrollbar { display:none; width:0; height:0; }
+    #sidenav-main .ps__rail-x,#sidenav-main .ps__rail-y,#sidenav-main .ps__thumb-x,#sidenav-main .ps__thumb-y { display:none!important; width:0!important; height:0!important; opacity:0!important; pointer-events:none!important; }
+    #sidenav-main.ps--active-x,#sidenav-main.ps--active-y,#sidenav-collapse-main.ps--active-x,#sidenav-collapse-main.ps--active-y { overflow:hidden!important; scrollbar-width:none!important; }
+    #sidenav-main .navbar-nav,#sidenav-main .nav-item,#sidenav-main .nav-link { max-width:100%; }
+    #sidenav-main .nav-link-text { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     body,.main-content,.bg-gray-100 { background-color:var(--app-background,#f8f9fa)!important; transition:background-color .2s ease; }
     #sidenav-main .navbar-brand span,#sidenav-main .sidebar-user .fw-bold { color:var(--app-sidebar-text,#344767)!important; }
     #sidenav-main .navbar-nav .nav-link:not(.active) { color:var(--app-sidebar-text,#67748e)!important; }
@@ -254,6 +259,32 @@
     .appearance-theme-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.15rem; }.appearance-theme-option{display:flex;align-items:center;gap:.32rem;min-width:0;width:100%;padding:.34rem .3rem;border:0;border-radius:.45rem;background:transparent;color:var(--app-sidebar-text,#475569);font-size:.63rem;text-align:left}.appearance-theme-option>span:nth-child(2){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.appearance-theme-option:hover{background:rgba(128,138,160,.12)}.appearance-theme-option.is-active{background:rgba(109,74,255,.14);color:var(--app-sidebar-icon,#4f36c8);font-weight:700}.theme-check{display:none;margin-left:auto;font-size:.55rem}.appearance-theme-option.is-active .theme-check{display:block}
     .theme-preview{display:flex;width:22px;height:15px;flex:0 0 auto;border:1px solid rgba(128,138,160,.25);border-radius:4px;overflow:hidden;background:#fff}.theme-preview i{width:8px;background:var(--preview-sidebar)}.theme-preview b{width:6px;height:4px;margin:3px;border-radius:2px;background:var(--preview-active)}.theme-preview--default{--preview-sidebar:#fff;--preview-active:#ff9a2a}.theme-preview--indigo{--preview-sidebar:#241b5c;--preview-active:#6d4aff}.theme-preview--navy{--preview-sidebar:#12213d;--preview-active:#2584e8}.theme-preview--emerald{--preview-sidebar:#113d35;--preview-active:#24b47e}.theme-preview--rose{--preview-sidebar:#4c1930;--preview-active:#e44f87}.theme-preview--amber{--preview-sidebar:#4a3212;--preview-active:#f59e0b}.theme-preview--cyan{--preview-sidebar:#103b46;--preview-active:#16a6c7}
   </style>
+  <script>
+    (function () {
+      var sidebar = document.getElementById('sidenav-main');
+      var sidebarContent = document.getElementById('sidenav-collapse-main');
+      if (!sidebar || !sidebarContent) return;
+
+      var lockSidebarScroll = function () {
+        sidebar.scrollTop = 0;
+        sidebar.scrollLeft = 0;
+        sidebarContent.scrollTop = 0;
+        sidebarContent.scrollLeft = 0;
+      };
+
+      sidebar.addEventListener('wheel', function (event) {
+        event.preventDefault();
+        lockSidebarScroll();
+      }, { passive: false, capture: true });
+      sidebar.addEventListener('touchmove', function (event) {
+        event.preventDefault();
+        lockSidebarScroll();
+      }, { passive: false, capture: true });
+      sidebar.addEventListener('scroll', lockSidebarScroll, { passive: true });
+      sidebarContent.addEventListener('scroll', lockSidebarScroll, { passive: true });
+      lockSidebarScroll();
+    })();
+  </script>
   <script>
     (function(){
       const themes = {

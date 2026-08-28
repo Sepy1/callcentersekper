@@ -400,14 +400,14 @@ document.addEventListener('DOMContentLoaded', function(){
 						</div>
 						<div class="chat-controls mt-2 pt-2 border-top" style="flex:0 0 auto;">
 							<div class="d-flex align-items-center" style="gap:.5rem;">
-									<button id="btn-attach" type="button" class="btn btn-outline-secondary" title="Lampiran" aria-label="Lampiran" style="width:36px;height:36px;padding:0;border-radius:8px;">
+									<button id="btn-attach" type="button" class="btn btn-outline-secondary chat-icon-button" title="Lampiran" aria-label="Lampiran">
 										<svg style="width:16px;height:16px;display:block;margin:auto;" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 											<path d="M6.354 1.5a3.5 3.5 0 0 1 4.95 4.95l-5.657 5.657a2.5 2.5 0 1 1-3.536-3.536l6.364-6.364" stroke="#6c757d" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
 											<path d="M9.95 3.9l-6.364 6.364a1.5 1.5 0 0 0 2.121 2.121l5.657-5.657" stroke="#6c757d" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
 										</svg>
 									</button>
 									<input type="text" id="chat-input" class="form-control" placeholder="Ketik pesan..." aria-label="Chat input" style="height:36px;border-radius:8px;font-size:0.8rem;padding-top:0.35rem;padding-bottom:0.35rem; min-width:0; flex:1 1 auto;">
-									<button id="btn-send" type="button" class="btn btn-primary" title="Kirim" aria-label="Kirim" style="width:36px;height:36px;padding:0;border-radius:8px;">
+									<button id="btn-send" type="button" class="btn btn-primary chat-icon-button" title="Kirim" aria-label="Kirim">
 										<svg style="width:16px;height:16px;display:block;margin:auto;" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 											<path d="M15.854.146a.5.5 0 0 0-.525-.116l-15 6a.5.5 0 0 0 .03.95l6.067 2.023L8.45 14.97a.5.5 0 0 0 .95.03l6-15a.5.5 0 0 0-.116-.525z" fill="#fff"/>
 										</svg>

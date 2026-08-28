@@ -16,6 +16,7 @@ use App\Http\Controllers\Officer\TindakLanjutController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\WhatsappTemplateController;
 use App\Http\Controllers\WhatsappSendTemplateController;
+use App\Http\Controllers\TicketHistoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -118,6 +119,9 @@ Route::get('/login', function () {
 // Public endpoint to send WhatsApp messages (no role/auth middleware)
 Route::post('/send-whatsapp', [\App\Http\Controllers\WhatsappController::class, 'send']);
 Route::group(['middleware' => 'auth'], function () {
+	Route::get('/tickets/{ticket}/history/pdf', [TicketHistoryController::class, 'downloadPdf'])
+		->whereNumber('ticket')
+		->name('tickets.history.pdf');
     Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users');
     Route::post('/admin/users', [UserController::class, 'store'])->name('admin.users.store');
     Route::put('/admin/users/{user}', [UserController::class, 'update'])->name('admin.users.update');

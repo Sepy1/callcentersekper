@@ -210,7 +210,7 @@ body { background:var(--app-background,var(--hd-bg)) !important; color:#202840; 
 .followup-action-card label { color:#46506b; font-size:.75rem; }.followup-action-card .form-control,.followup-action-card .form-select { min-height:43px;border-color:var(--hd-border);border-radius:9px;box-shadow:none}.followup-action-card .form-control:focus,.followup-action-card .form-select:focus{border-color:var(--hd-primary);box-shadow:0 0 0 3px rgba(91,63,211,.1)}
 .action-helper { color:var(--hd-muted);font-size:.7rem;margin:.4rem 0 .8rem}.btn-helpdesk-primary,.btn-helpdesk-success{border:0!important;border-radius:8px!important;color:#fff!important;font-weight:700;padding:.65rem 1.1rem!important;margin:0!important}.btn-helpdesk-primary{background:var(--hd-primary)!important}.btn-helpdesk-success{background:var(--hd-success)!important}
 .current-status-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem;color:#556078;font-size:.75rem}
-.followup-chat-card { min-height:0; background:#fff; }.chat-online{padding:.35rem .65rem;border-radius:99px;background:#e4f8e9;color:#26934c;font-size:.68rem;font-weight:700}.followup-chat-card>.card-body{padding:0!important}.chat-message-surface{background:#fbfbfd!important;border-radius:0!important;padding:1rem!important}.chat-empty-state{margin:auto;text-align:center;padding:2rem;color:var(--hd-muted)}.chat-empty-icon{width:82px;height:82px;border-radius:50%;display:grid;place-items:center;margin:0 auto 1rem;background:#f0edff;color:var(--hd-primary);font-size:2rem}.chat-empty-state strong{display:block;color:#20263b;font-size:1rem;margin-bottom:.35rem}.chat-controls{padding:.9rem 1rem!important;margin:0!important;background:#fff}.chat-controls .form-control{height:44px!important;border-color:var(--hd-border);font-size:.82rem!important}.chat-controls .btn{width:44px!important;height:44px!important;margin:0!important}.chat-controls #btn-send{background:var(--hd-primary);border-color:var(--hd-primary)}
+.followup-chat-card { min-height:0; background:#fff; }.chat-online{padding:.35rem .65rem;border-radius:99px;background:#e4f8e9;color:#26934c;font-size:.68rem;font-weight:700}.followup-chat-card>.card-body{padding:0!important}.chat-message-surface{background:#fbfbfd!important;border-radius:0!important;padding:1rem!important}.chat-empty-state{margin:auto;text-align:center;padding:2rem;color:var(--hd-muted)}.chat-empty-icon{width:82px;height:82px;border-radius:50%;display:grid;place-items:center;margin:0 auto 1rem;background:#f0edff;color:var(--hd-primary);font-size:2rem}.chat-empty-state strong{display:block;color:#20263b;font-size:1rem;margin-bottom:.35rem}.chat-controls{padding:.9rem 1rem!important;margin:0!important;background:#fff}.chat-controls .form-control{height:44px!important;border-color:var(--hd-border);font-size:.82rem!important}.chat-controls .chat-icon-button{display:inline-grid!important;place-items:center;width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;max-width:44px!important;max-height:44px!important;flex:0 0 44px!important;aspect-ratio:1/1;padding:0!important;margin:0!important;border-radius:9px!important;line-height:1!important;box-sizing:border-box}.chat-controls .chat-icon-button svg{display:block!important;width:18px!important;height:18px!important;min-width:18px!important;min-height:18px!important;max-width:18px!important;max-height:18px!important;aspect-ratio:1/1;flex:none;transform:none}.chat-controls #btn-send{background:var(--hd-primary);border-color:var(--hd-primary)}
 .chat-ticket-summary { flex:0 0 auto; margin:0; border:1px solid var(--hd-border); border-radius:15px; background:#f8f9fc; box-shadow:0 6px 22px rgba(26,33,56,.05); overflow:hidden; }
 .chat-ticket-summary__header { display:flex; align-items:center; justify-content:space-between; gap:.75rem; padding:.85rem .9rem; background:#fff; border-bottom:1px solid var(--hd-border); }
 .chat-ticket-summary__eyebrow { display:block; margin-bottom:.15rem; color:var(--hd-primary); font-size:.62rem; font-weight:800; text-transform:uppercase; letter-spacing:.07em; }
@@ -470,10 +470,9 @@ body { background:var(--app-background,var(--hd-bg)) !important; color:#202840; 
                                 <button
                                     id="btn-attach"
                                     type="button"
-                                    class="btn btn-outline-secondary d-inline-flex align-items-center justify-content-center"
+                                    class="btn btn-outline-secondary chat-icon-button"
                                     title="Lampiran"
                                     aria-label="Lampiran"
-                                    style="width:36px;height:36px;padding:0;border-radius:8px;"
                                 >
                                     <svg style="width:16px;height:16px;display:block;margin:auto;" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M6.354 1.5a3.5 3.5 0 0 1 4.95 4.95l-5.657 5.657a2.5 2.5 0 1 1-3.536-3.536l6.364-6.364" stroke="#6c757d" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -491,10 +490,9 @@ body { background:var(--app-background,var(--hd-bg)) !important; color:#202840; 
                                 <button
                                     id="btn-send"
                                     type="button"
-                                    class="btn btn-primary d-inline-flex align-items-center justify-content-center"
+                                    class="btn btn-primary chat-icon-button"
                                     title="Kirim"
                                     aria-label="Kirim"
-                                    style="width:36px;height:36px;padding:0;border-radius:8px;"
                                 >
                                     <svg style="width:16px;height:16px;display:block;margin:auto;" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M15.854.146a.5.5 0 0 0-.525-.116l-15 6a.5.5 0 0 0 .03.95l6.067 2.023L8.45 14.97a.5.5 0 0 0 .95.03l6-15a.5.5 0 0 0-.116-.525z" fill="#fff"/>
@@ -517,13 +515,13 @@ body { background:var(--app-background,var(--hd-bg)) !important; color:#202840; 
     <!-- Removed stray literal -->
     <!-- Modal: Ticket History -->
     @php
-        $history = \App\Models\ActivityLog::where('ticket_id', $ticket->id)
+        $history = \App\Models\ActivityLog::with('user')->where('ticket_id', $ticket->id)
             ->orderBy('created_at')
             ->get();
     @endphp
 <!-- Modal: Ticket History -->
 @php
-    $history = \App\Models\ActivityLog::where('ticket_id', $ticket->id)
+    $history = \App\Models\ActivityLog::with('user')->where('ticket_id', $ticket->id)
         ->orderBy('created_at')
         ->get();
 
@@ -562,7 +560,7 @@ body { background:var(--app-background,var(--hd-bg)) !important; color:#202840; 
         <div class="timeline">
             @foreach($history as $h)
                 @php
-                    $when = \Illuminate\Support\Carbon::parse($h->created_at)->format('d M Y H:i');
+                    $when = \Illuminate\Support\Carbon::parse($h->created_at)->format('d/m/Y H:i') . ' WIB';
                     $label = $h->action;
                     $detail = $h->detail ?? '';
 
@@ -597,7 +595,9 @@ body { background:var(--app-background,var(--hd-bg)) !important; color:#202840; 
                         }
                     }
 
-                    [$title, $color] = $map[$label] ?? [ucfirst(str_replace('_', ' ', $label)), 'dark'];
+                    [$title, $color] = $map[$label] ?? [$h->action_label, 'dark'];
+                    $title = $h->action_label;
+                    $detail = $h->detail_indonesia;
                 @endphp
 
                 <div class="timeline-item">
@@ -628,6 +628,9 @@ body { background:var(--app-background,var(--hd-bg)) !important; color:#202840; 
 </div>
 
             <div class="modal-footer">
+                <a href="{{ route('tickets.history.pdf', $ticket) }}" target="ticket-history-pdf-frame" class="btn btn-primary" data-bs-dismiss="modal">
+                    <i class="fas fa-file-pdf me-1"></i> Unduh PDF
+                </a>
                 <button class="btn btn-outline-secondary" data-bs-dismiss="modal">
                     Tutup
                 </button>
